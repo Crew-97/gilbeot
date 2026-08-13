@@ -4,6 +4,7 @@
 // 기사가 직접 열 때만 갱신한다. 알림·자동 팝업·자동 새로고침 금지
 // 소비 전용 — 인터뷰를 만들지 않고, 경로·도로 정보를 주지 않는다
 // 좌표 이력을 쌓지 않는다. mockLocation 은 값 하나뿐이다
+// 잠긴 카드는 제목 없이 카테고리·장소·평가 수·작성일만 보여준다 (해소 33)
 
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/components/StoreProvider'
@@ -16,8 +17,9 @@ import {
   NEAR_RADIUS_KM,
 } from '@/lib/store'
 import { useState } from 'react'
-import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
+import { Header } from '@/components/Header'
+import { LockedCardSummary } from '@/components/LockedCardSummary'
 import { MockBadge } from '@/components/MockBadge'
 import { PointText } from '@/components/PointText'
 
@@ -92,11 +94,8 @@ export default function NearbyPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-4 px-4 py-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-title-3 tracking-tight text-ink-000">주변</h1>
-        <PointText amount={balance} showSign={false} />
-      </header>
+    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-4 px-4 pb-6">
+      <Header title="주변" right={<PointText amount={balance} showSign={false} />} />
 
       <div className="flex items-center justify-between rounded-md border border-hairline bg-paper p-3.5">
         <div className="flex flex-col gap-1">
@@ -129,41 +128,38 @@ export default function NearbyPage() {
             onClick={() => router.push(`/cards/${card.id}`)}
             className="cursor-pointer rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
           >
-            <div className="flex items-center gap-2">
-              <span className="rounded-xs border border-hairline bg-accent-soft px-1.5 py-0.5 text-micro font-bold tracking-wide text-ink-700">
-                {CATEGORY_LABELS[card.category]}
-              </span>
-              {card.placeId ? (
-                <span className="text-caption text-ink-500">{placeName(card.placeId)}</span>
-              ) : null}
-            </div>
+            {card.isUnlocked ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-xs border border-hairline bg-accent-soft px-1.5 py-0.5 text-micro font-bold tracking-wide text-ink-700">
+                    {CATEGORY_LABELS[card.category]}
+                  </span>
+                  {card.placeId ? (
+                    <span className="text-caption text-ink-500">{placeName(card.placeId)}</span>
+                  ) : null}
+                </div>
 
-            <h3 className="mt-2 text-body font-bold text-ink-000">
-              {card.isUnlocked ? '' : '🔒 '}
-              {card.title}
-            </h3>
+                <h3 className="mt-2 text-body font-bold text-ink-000">{card.title}</h3>
 
-            {card.isUnlocked && card.reason ? (
-              <p className="mt-1 text-body-sm text-ink-700">{card.reason}</p>
-            ) : null}
-
-            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-ink-500">
-              <span>작성 {formatDate(card.createdAt)}</span>
-              {card.crossCheckCount > 0 ? <span>{card.crossCheckCount}명의 기사가 확인</span> : null}
-            </div>
-
-            {!card.isUnlocked ? (
-              <div className="mt-3" onClick={(e) => e.stopPropagation()}>
-                <Button variant="accent" onClick={() => handleUnlock(card.id)}>
-                  10P로 열기
-                </Button>
-                {failReasons[card.id] ? (
-                  <p className="mt-1 text-caption text-ink-500">
-                    {failReasons[card.id]} 내 경험을 공유하고 포인트를 받아 보세요.
-                  </p>
+                {card.reason ? (
+                  <p className="mt-1 text-body-sm text-ink-700">{card.reason}</p>
                 ) : null}
-              </div>
-            ) : null}
+
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-ink-500">
+                  <span>작성 {formatDate(card.createdAt)}</span>
+                  {card.crossCheckCount > 0 ? (
+                    <span>{card.crossCheckCount}명의 기사가 확인</span>
+                  ) : null}
+                </div>
+              </>
+            ) : (
+              <LockedCardSummary
+                card={card}
+                placeName={card.placeId ? placeName(card.placeId) : center?.name || ''}
+                onUnlock={() => handleUnlock(card.id)}
+                failReason={failReasons[card.id]}
+              />
+            )}
           </article>
         ))
       )}

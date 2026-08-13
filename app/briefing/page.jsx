@@ -1,7 +1,7 @@
 'use client'
 
 // S-09 도착지 브리핑 — 저장된 카드를 카테고리 4종으로 정리·배치만 한다 (기획서 8-4)
-// LLM 을 호출하지 않는다. 잠긴 카드는 제목과 자물쇠만 보여준다
+// LLM 을 호출하지 않는다. 잠긴 카드는 제목 없이 카테고리·장소·평가 수·작성일만 보여준다 (해소 33)
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -10,6 +10,8 @@ import { getCards, getCurrentDispatch, getPointBalance, unlockCard } from '@/lib
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
 import { ErrorState } from '@/components/ErrorState'
+import { Header } from '@/components/Header'
+import { LockedCardSummary } from '@/components/LockedCardSummary'
 import { PointText } from '@/components/PointText'
 
 const CATEGORIES = [
@@ -67,13 +69,12 @@ export default function BriefingPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-6 px-4 py-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-title-3 tracking-tight text-ink-000">
-          {center?.name} 도착지 브리핑
-        </h1>
-        <PointText amount={balance} showSign={false} />
-      </header>
+    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-6 px-4 pb-6">
+      <Header
+        title={`${center?.name} 도착지 브리핑`}
+        onBack={() => router.push('/destination')}
+        right={<PointText amount={balance} showSign={false} />}
+      />
 
       {/* 카테고리 4종별 건수 한 줄 */}
       <p className="text-caption text-ink-500">
@@ -97,38 +98,30 @@ export default function BriefingPage() {
                   onClick={() => router.push(`/cards/${card.id}`)}
                   className="cursor-pointer rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-body font-bold text-ink-000">
-                      {card.isUnlocked ? '' : '🔒 '}
-                      {card.title}
-                    </h3>
-                  </div>
+                  {card.isUnlocked ? (
+                    <>
+                      <h3 className="text-body font-bold text-ink-000">{card.title}</h3>
 
-                  {/* 해금 카드만 본문을 보여준다. 잠긴 카드는 store 가 본문을 아예 보내지 않는다 */}
-                  {card.isUnlocked && card.reason ? (
-                    <p className="mt-1 text-body-sm text-ink-700">{card.reason}</p>
-                  ) : null}
-
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-ink-500">
-                    {card.placeId ? <span>{placeName(card.placeId)}</span> : null}
-                    <span>작성 {formatDate(card.createdAt)}</span>
-                    {card.crossCheckCount > 0 ? (
-                      <span>{card.crossCheckCount}명의 기사가 확인</span>
-                    ) : null}
-                  </div>
-
-                  {!card.isUnlocked ? (
-                    <div className="mt-3" onClick={(e) => e.stopPropagation()}>
-                      <Button variant="accent" onClick={() => handleUnlock(card.id)}>
-                        10P로 열기
-                      </Button>
-                      {failReasons[card.id] ? (
-                        <p className="mt-1 text-caption text-ink-500">
-                          {failReasons[card.id]} 내 경험을 공유하고 포인트를 받아 보세요.
-                        </p>
+                      {card.reason ? (
+                        <p className="mt-1 text-body-sm text-ink-700">{card.reason}</p>
                       ) : null}
-                    </div>
-                  ) : null}
+
+                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-ink-500">
+                        {card.placeId ? <span>{placeName(card.placeId)}</span> : null}
+                        <span>작성 {formatDate(card.createdAt)}</span>
+                        {card.crossCheckCount > 0 ? (
+                          <span>{card.crossCheckCount}명의 기사가 확인</span>
+                        ) : null}
+                      </div>
+                    </>
+                  ) : (
+                    <LockedCardSummary
+                      card={card}
+                      placeName={card.placeId ? placeName(card.placeId) : center?.name || ''}
+                      onUnlock={() => handleUnlock(card.id)}
+                      failReason={failReasons[card.id]}
+                    />
+                  )}
                 </article>
               ))
             )}
