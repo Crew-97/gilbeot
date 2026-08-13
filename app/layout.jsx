@@ -1,5 +1,6 @@
 import './globals.css'
 import { StoreProvider } from '@/components/StoreProvider'
+import { TabBar } from '@/components/TabBar'
 
 export const metadata = {
   title: '길벗',
@@ -15,7 +16,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko">
       <body className="antialiased">
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          {children}
+          <TabBar />
+        </StoreProvider>
       </body>
     </html>
   )
