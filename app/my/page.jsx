@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { EmptyState } from '@/components/EmptyState'
 import { ErrorState } from '@/components/ErrorState'
 import { PointText } from '@/components/PointText'
@@ -244,6 +245,15 @@ export default function MyPage() {
           </ol>
         )}
       </section>
+
+      <div className="mt-8 flex justify-center">
+        <Link
+          href="/"
+          className="inline-flex min-h-11 items-center px-4 text-caption text-ink-300 underline underline-offset-2"
+        >
+          길벗 서비스 소개
+        </Link>
+      </div>
     </main>
   )
 }
