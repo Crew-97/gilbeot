@@ -1,101 +1,154 @@
 'use client'
 
-// 하단 탭바 (해소 #6). 홈 / 노하우 / 주변 / 마이 4탭, 높이 52px
-// 여정 깔때기 화면(S-01·S-02·S-09)과 인터뷰(S-06)에서는 숨긴다
-// 관리자 링크는 노출하지 않는다 (해소 #13)
-//
-// 라벨은 해소 #36 으로 "암묵지" → "노하우" 로 바꿨다. 화면 표기만이고
-// 경로(/cards)와 store 함수명은 그대로다
-//
-// 주변 탭은 운행 중에만 연다 (2026-08-13 팀장 확정). 운행 중 현재 위치 기반
-// 조회 화면이라 운행 전에는 보여 줄 기준점이 없기 때문이다 (기획서 8-6)
+// 하단 탭바 (해소 #6). 홈 / 노하우 / 주변 / 마이 4탭
+// 여정 깔때기 화면과 인터뷰, 관리자 화면에서는 숨긴다
+// 주변 탭은 운행 중에만 열고 잠긴 상태에서도 안내를 누를 수 있게 한다
 
 import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useStore } from '@/components/StoreProvider'
 import { getCurrentDispatch } from '@/lib/store'
 
 const TABS = [
-  { href: '/home', label: '홈' },
-  { href: '/cards', label: '노하우' },
-  { href: '/nearby', label: '주변', drivingOnly: true },
-  { href: '/my', label: '마이' },
+  { href: '/home', label: '홈', icon: 'home' },
+  { href: '/cards', label: '노하우', icon: 'cards' },
+  { href: '/nearby', label: '주변', icon: 'nearby', drivingOnly: true },
+  { href: '/my', label: '마이', icon: 'my' },
 ]
 
-// 잠긴 탭을 눌렀을 때 띄우는 안내가 사라지는 시간
 const NOTICE_MS = 2600
 
 function matches(pathname, href) {
   return pathname === href || pathname.startsWith(href + '/')
 }
 
+function TabIcon({ name }) {
+  const common = {
+    width: 23,
+    height: 23,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 2,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    'aria-hidden': true,
+  }
+
+  if (name === 'home') {
+    return (
+      <svg {...common}>
+        <path d="M3.75 10.2 12 3.75l8.25 6.45" />
+        <path d="M5.75 9.1v10.15h12.5V9.1" />
+        <path d="M9.25 19.25v-5.5h5.5v5.5" />
+      </svg>
+    )
+  }
+
+  if (name === 'cards') {
+    return (
+      <svg {...common}>
+        <rect x="5.25" y="4" width="13.5" height="16" rx="2.25" />
+        <path d="M8.5 8h7M8.5 12h7M8.5 16h4.25" />
+        <path d="M3 7.25v9.5" />
+      </svg>
+    )
+  }
+
+  if (name === 'nearby') {
+    return (
+      <svg {...common}>
+        <path d="M12 21s6.25-5.48 6.25-11.25a6.25 6.25 0 1 0-12.5 0C5.75 15.52 12 21 12 21Z" />
+        <circle cx="12" cy="9.75" r="2.15" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg {...common}>
+      <circle cx="12" cy="8" r="3.25" />
+      <path d="M5.75 20c.45-4.1 2.55-6.15 6.25-6.15S17.8 15.9 18.25 20" />
+    </svg>
+  )
+}
+
 export function TabBar() {
   const pathname = usePathname()
-  const router = useRouter()
   const store = useStore()
   const [notice, setNotice] = useState('')
 
-  // 훅은 조기 반환보다 위에 둔다
   useEffect(() => {
     if (!notice) return
     const timer = setTimeout(() => setNotice(''), NOTICE_MS)
     return () => clearTimeout(timer)
   }, [notice])
 
-  const visible = TABS.some((tab) => matches(pathname, tab.href))
-  if (!visible) return null
+  const activeIndex = TABS.findIndex((tab) => matches(pathname, tab.href))
+  if (activeIndex < 0) return null
 
-  // 운행 중 판정은 두 시각으로만 한다. 상태값을 따로 저장하지 않는다
   const dispatch = store?.state ? getCurrentDispatch(store.state) : null
   const driving = Boolean(dispatch?.startedAt && !dispatch?.endedAt)
-
-  function handleTab(tab, locked) {
-    if (locked) {
-      setNotice('운행을 시작하면 주변 노하우를 볼 수 있어요')
-      return
-    }
-    router.push(tab.href)
-  }
+  const glowLeft = `${((activeIndex + 0.5) / TABS.length) * 100}%`
 
   return (
     <>
-      {/* 고정 탭바에 가려지지 않게 본문 끝에 같은 높이의 여백을 둔다 */}
-      <div className="h-[52px]" aria-hidden />
+      <div className="floating-tab-bar-spacer" aria-hidden />
 
       {notice ? (
-        <div
-          role="status"
-          className="fixed inset-x-0 bottom-[60px] z-10 mx-auto flex max-w-[390px] justify-center px-4"
-        >
-          <p className="rounded-pill bg-inverse px-4 py-2 text-center text-body-sm text-paper shadow-block">
-            {notice}
-          </p>
+        <div role="status" className="floating-tab-notice">
+          <p>{notice}</p>
         </div>
       ) : null}
 
-      <nav className="fixed inset-x-0 bottom-0 z-10 mx-auto flex h-[52px] max-w-[390px] items-stretch border-t border-hairline bg-paper">
+      <nav className="floating-tab-bar" aria-label="주요 메뉴">
+        <span
+          className="floating-tab-bar__glow"
+          style={{ left: glowLeft }}
+          aria-hidden
+        />
+
         {TABS.map((tab) => {
           const active = matches(pathname, tab.href)
           const locked = Boolean(tab.drivingOnly) && !driving
+          const className =
+            'floating-tab-bar__tab ' +
+            (active
+              ? 'floating-tab-bar__tab--active'
+              : locked
+                ? 'floating-tab-bar__tab--locked'
+                : '')
+          const content = (
+            <>
+              <TabIcon name={tab.icon} />
+              <span>{tab.label}</span>
+            </>
+          )
 
-          // disabled 를 쓰면 클릭이 오지 않아 안내를 띄울 수 없다.
-          // 그래서 aria-disabled 로 알리고 이동만 막는다
+          if (locked) {
+            return (
+              <button
+                key={tab.href}
+                type="button"
+                onClick={() => setNotice('운행을 시작하면 주변 노하우를 볼 수 있어요')}
+                aria-current={active ? 'page' : undefined}
+                aria-disabled="true"
+                className={className}
+              >
+                {content}
+              </button>
+            )
+          }
+
           return (
-            <button
+            <Link
               key={tab.href}
-              onClick={() => handleTab(tab, locked)}
-              aria-disabled={locked}
-              className={
-                'flex flex-1 items-center justify-center text-body-sm ' +
-                (locked
-                  ? 'text-ink-300'
-                  : active
-                    ? 'bg-accent-soft font-bold text-ink-000'
-                    : 'text-ink-500')
-              }
+              href={tab.href}
+              aria-current={active ? 'page' : undefined}
+              className={className}
             >
-              {tab.label}
-            </button>
+              {content}
+            </Link>
           )
         })}
       </nav>

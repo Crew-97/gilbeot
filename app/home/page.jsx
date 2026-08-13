@@ -304,7 +304,7 @@ export default function HomePage() {
 
       {failReason ? <p className="text-center text-body-sm text-danger">{failReason}</p> : null}
 
-      <div className="sticky bottom-[68px] mt-auto flex justify-center">
+      <div className="sticky bottom-[calc(94px+env(safe-area-inset-bottom))] mt-auto flex justify-center">
         {ended ? (
           <Button className="w-[358px]" onClick={() => router.push('/survey')}>
             인터뷰로 이동

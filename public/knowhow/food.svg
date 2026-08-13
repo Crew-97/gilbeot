@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="기사식당을 표현한 일러스트">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#F2CFAF"/><stop offset="1" stop-color="#769B86"/></linearGradient>
+    <linearGradient id="shop" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F8EEDC"/><stop offset="1" stop-color="#D7C4A4"/></linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="674" cy="97" r="64" fill="#FFF0A0" opacity=".85"/>
+  <path d="M0 420c145-44 281-32 412 16s260 39 388-8v172H0Z" fill="#486756"/>
+  <rect x="88" y="191" width="526" height="322" rx="12" fill="url(#shop)"/>
+  <path d="M59 197h584l-54-83H111Z" fill="#234A3B"/>
+  <path d="M112 238h477v76H112z" rx="8" fill="#F1D44B"/>
+  <path d="M154 260h393" stroke="#294B3D" stroke-width="18" stroke-linecap="round" opacity=".86"/>
+  <path d="M139 351h118v162H139zm166 0h118v162H305zm166 0h86v162h-86z" fill="#315647"/>
+  <path d="M154 374h87m80 0h86m80 0h54" stroke="#B8D4C4" stroke-width="12"/>
+  <path d="M551 444h131l48 41v50H530v-58Z" fill="#E9DAB9"/>
+  <circle cx="574" cy="536" r="27" fill="#203B31"/><circle cx="688" cy="536" r="27" fill="#203B31"/>
+  <path d="M0 551h800v49H0z" fill="#31483F"/><path d="M75 570h156m98 0h156" stroke="#F4E76A" stroke-width="7" stroke-linecap="round"/>
+</svg>

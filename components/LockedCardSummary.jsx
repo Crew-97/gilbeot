@@ -20,7 +20,40 @@ function formatDate(iso) {
 // card: getCards 가 반환한 잠긴 카드 (title 은 이미 빈 문자열)
 // placeName: 화면이 place 를 찾아 넘긴다. center_tip 이면 센터명을 넘긴다
 // onUnlock 이 없으면 해금 버튼을 숨긴다 (표시 전용 맥락)
-export function LockedCardSummary({ card, placeName, onUnlock, failReason }) {
+export function LockedCardSummary({ card, placeName, onUnlock, failReason, variant = 'default' }) {
+  if (variant === 'overlay') {
+    return (
+      <div className="text-paper">
+        <div className="flex items-center gap-2">
+          <span aria-hidden="true">🔒</span>
+          <span className="rounded-pill border border-white/25 bg-black/25 px-2.5 py-1 text-micro font-bold tracking-wide text-yellow-400 backdrop-blur-md">
+            {CATEGORY_LABELS[card.category] || card.category}
+          </span>
+          {placeName ? (
+            <span className="min-w-0 truncate text-caption font-bold text-white/80">
+              {placeName}
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption font-bold text-white/80">
+          <span>👍 {card.helpfulCount}</span>
+          <span>👎 {card.notHelpfulCount}</span>
+          <span>작성 {formatDate(card.createdAt)}</span>
+        </div>
+
+        {onUnlock ? (
+          <div className="mt-4" onClick={(e) => e.stopPropagation()}>
+            <Button variant="accent" onClick={onUnlock}>
+              10P로 열기
+            </Button>
+            {failReason ? <p className="mt-2 text-caption text-white/80">{failReason}</p> : null}
+          </div>
+        ) : null}
+      </div>
+    )
+  }
+
   return (
     <div>
       <div className="flex items-center gap-2">
