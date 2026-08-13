@@ -42,3 +42,6 @@ next-env.d.ts
 
 # 당일 실행 지침 (준비 레포 전용 — 이 레포에 존재하면 안 된다)
 playbook/
+
+# 골든 테스트 결과
+/ai/results/
