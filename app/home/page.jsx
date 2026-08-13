@@ -14,6 +14,7 @@ import { loadKakaoMaps } from '@/lib/kakao'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
 import { ErrorState } from '@/components/ErrorState'
+import { Header } from '@/components/Header'
 import { MockBadge } from '@/components/MockBadge'
 import { PointText } from '@/components/PointText'
 
@@ -255,14 +256,12 @@ export default function HomePage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-5 px-4 py-6">
-      <header className="flex items-center justify-between">
-        <div>
-          <span className="text-caption text-ink-500">도착지</span>
-          <h1 className="mt-1 text-title-3 tracking-tight text-ink-000">{center.name}</h1>
-        </div>
-        <PointText amount={balance} showSign={false} />
-      </header>
+    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-5 px-4 pb-6">
+      <Header
+        title={center.name}
+        onBack={driving ? undefined : () => router.back()}
+        right={<PointText amount={balance} showSign={false} />}
+      />
 
       <section className="overflow-hidden rounded-lg border border-hairline bg-paper shadow-block">
         <div className="flex items-center justify-between border-b border-hairline px-4 py-3">
