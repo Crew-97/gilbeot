@@ -1,0 +1,58 @@
+{
+  "_note": "LLM 실패 시 route.js 가 반환하는 캐시 폴백. 이 파일이 정본이고 route.js 는 같은 값을 상수로 갖는다. 시연 대사를 바꾸면 두 곳을 함께 고친다. 시연 기준은 center_002 군포 복합물류센터 + place_005 군포하나로주유소 (해소 32)",
+  "base_answer": {
+    "verdict": "valid",
+    "rejectReason": null,
+    "cards": [
+      {
+        "title": "센터 진입 전에 주유하기 편해요",
+        "reason": "군포센터 안에는 기름 넣을 데가 없어요",
+        "category": "gas",
+        "placeName": "군포하나로주유소",
+        "evidence": "센터 들어가기 전에 넣기 편해요. 군포센터 안에는 기름 넣을 데가 없거든요.",
+        "relation": "similar",
+        "relatedCardId": "card_010",
+        "relationReason": "두 주장 모두 센터 내 주유소가 없어 진입 전 주유를 권한다는 같은 사실을 말함"
+      }
+    ],
+    "elementCheck": {
+      "place": true,
+      "vehicle": false,
+      "time": false,
+      "center": true,
+      "reason": true
+    },
+    "followUpQuestion": "대형 화물차도 들어가기 편한가요?"
+  },
+  "follow_up_answer": {
+    "verdict": "valid",
+    "rejectReason": null,
+    "cards": [
+      {
+        "title": "11톤 차량도 들어가기 어렵지 않아요",
+        "reason": "입구가 넓어요",
+        "category": "gas",
+        "placeName": "군포하나로주유소",
+        "evidence": "입구가 넓어서 11톤도 들어가기 어렵지 않아요.",
+        "relation": "new",
+        "relatedCardId": null,
+        "relationReason": null
+      }
+    ],
+    "elementCheck": {
+      "place": true,
+      "vehicle": true,
+      "time": false,
+      "center": false,
+      "reason": true
+    },
+    "followUpQuestion": null
+  },
+  "reject": {
+    "verdict": "invalid",
+    "rejectReason": "no_information",
+    "cards": [],
+    "elementCheck": null,
+    "followUpQuestion": null
+  }
+}
