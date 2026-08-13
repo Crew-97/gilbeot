@@ -12,12 +12,14 @@ import {
   addInterviewItem,
   buildStructureRequest,
   getCurrentInterview,
+  getCards,
   getDraftCards,
   getPointBalance,
   publishCard,
 } from '@/lib/store'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
+import { Header } from '@/components/Header'
 import { ErrorState } from '@/components/ErrorState'
 import { PointText } from '@/components/PointText'
 import { VoiceButton } from '@/components/VoiceButton'
@@ -88,6 +90,7 @@ export default function SurveyPage() {
   const [failReason, setFailReason] = useState(null)
   const [speechSupported, setSpeechSupported] = useState(null)
   const [textMode, setTextMode] = useState(false)
+  const [confirmingExit, setConfirmingExit] = useState(false)
 
   // 화면을 벗어나도 마이크가 열려 있으면 안 된다
   // 지원 여부는 여기서 판정하지 않는다. 서버 렌더 결과와 어긋나므로 첫 시도에서 확인한다
@@ -132,6 +135,9 @@ export default function SurveyPage() {
   const question = followUpText || template(place ? place.name : center.name)
 
   const drafts = getDraftCards(state, interview.id)
+  // 관계로 연결된 기존 카드는 잠금 규칙을 그대로 따른다
+  // state.cards 를 직접 읽으면 해금하지 않은 남의 카드 제목이 새어 나간다 (해소 33)
+  const publishedCards = getCards(state)
   const items = state.interviewItems.filter((item) => item.interviewId === interview.id)
   const balance = getPointBalance(state, state.currentDriverId)
   const answer = sttText.trim()
@@ -267,6 +273,13 @@ export default function SurveyPage() {
     setPhase('idle')
   }
 
+  // 게시 전 취소. 상태를 바꾸지 않으므로 포인트도 움직이지 않는다
+  // 이미 만들어진 카드가 있어도 draft 라서 다른 기사에게 노출되지 않고 보상도 지급되지 않는다
+  const handleExit = () => {
+    setConfirmingExit(false)
+    router.push('/home')
+  }
+
   const handlePublish = () => {
     const targets = getDraftCards(state, interview.id)
     if (targets.length === 0) {
@@ -302,11 +315,11 @@ export default function SurveyPage() {
 
   if (phase === 'published') {
     return (
-      <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-5 px-4 py-6">
-        <header>
-          <span className="text-caption text-ink-500">{place ? place.name : center.name}</span>
-          <h1 className="mt-1 text-title-2 tracking-tight text-ink-000">경험을 공유했어요</h1>
-        </header>
+      <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-5 px-4 pb-6">
+        {/* 이미 게시된 뒤라 취소할 것이 없다. 뒤로가기를 두지 않는다 */}
+        <Header title="게시 완료" />
+
+        <p className="text-caption text-ink-500">{place ? place.name : center.name}</p>
 
         <section className="rounded-lg border border-hairline bg-accent-soft p-5 text-center shadow-block animate-card-in">
           <p className="text-body-sm text-ink-700">적립 포인트</p>
@@ -349,16 +362,17 @@ export default function SurveyPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-5 px-4 py-6">
-      <header className="flex items-start justify-between gap-3">
-        <div>
-          <span className="text-caption text-ink-500">
-            {place ? `${CATEGORY_LABELS[place.category]} ${place.name}` : center.name}
-          </span>
-          <h1 className="mt-1 text-title-3 tracking-tight text-ink-000">AI 인터뷰</h1>
-        </div>
-        <PointText amount={balance} showSign={false} />
-      </header>
+    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-5 px-4 pb-6">
+      {/* 게시 전이라 뒤로가기는 인터뷰 취소다. 확인을 받고 나간다 */}
+      <Header
+        title="AI 인터뷰"
+        onBack={() => setConfirmingExit(true)}
+        right={<PointText amount={balance} showSign={false} />}
+      />
+
+      <p className="text-caption text-ink-500">
+        {place ? `${CATEGORY_LABELS[place.category]} ${place.name}` : center.name}
+      </p>
 
       <section className="rounded-lg border border-hairline bg-paper p-4 shadow-block">
         <span className="text-caption text-ink-500">
@@ -411,7 +425,7 @@ export default function SurveyPage() {
               {drafts.map((card) => {
                 const relation = state.cardRelations.find((item) => item.cardId === card.id) || null
                 const related = relation
-                  ? state.cards.find((item) => item.id === relation.relatedCardId)
+                  ? publishedCards.find((item) => item.id === relation.relatedCardId)
                   : null
 
                 return (
@@ -433,7 +447,9 @@ export default function SurveyPage() {
                         : '새로 등록되는 암묵지예요'}
                     </p>
                     {related ? (
-                      <p className="mt-1 text-caption text-ink-500">연결 대상 · {related.title}</p>
+                      <p className="mt-1 text-caption text-ink-500">
+                        연결 대상 · {related.title || '잠긴 암묵지'}
+                      </p>
                     ) : null}
                   </article>
                 )
@@ -554,6 +570,31 @@ export default function SurveyPage() {
           </div>
         </>
       )}
+
+      {confirmingExit ? (
+        <div
+          className="fixed inset-0 z-20 flex items-end justify-center bg-[var(--scrim)] px-4 pb-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="exit-title"
+        >
+          <div className="w-full max-w-[358px] rounded-lg bg-paper p-5 shadow-overlay">
+            <p id="exit-title" className="text-body font-bold text-ink-000">
+              인터뷰를 취소할까요?
+            </p>
+            <p className="mt-2 text-body-sm text-ink-500">지금까지 답변은 저장되지 않아요.</p>
+
+            <div className="mt-5 flex flex-col gap-2">
+              <Button className="w-full" onClick={handleExit}>
+                인터뷰 취소하기
+              </Button>
+              <Button variant="ghost" className="w-full" onClick={() => setConfirmingExit(false)}>
+                계속 답변하기
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   )
 }
