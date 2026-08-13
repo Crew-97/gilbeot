@@ -1,11 +1,13 @@
 // POST /api/structure — 기사 답변 1턴을 받아 AI 판단 5단계를 수행한다
 // 상태를 바꾸지 않는 순수 변환 함수다. 포인트 적립과 카드 저장은 store 가 한다 (API.md 2-3)
-// 계약 정본: docs/API.md A장 / 프롬프트 정본: ai/system_prompt.txt / 폴백 정본: ai/fallback_response.json
+// 계약 정본: docs/API.md A장 / 프롬프트와 폴백 캐시의 정본은 이 파일의 상수다 (ai/ 는 레포에서 제외)
 
 // LLM 예산 20초를 다 쓰고도 폴백을 반환할 여유를 둔다. 20 이면 함수가 먼저 종료돼 폴백이 못 나간다
 export const maxDuration = 25
 
-const MODEL = 'gemini-3.6-flash'
+// 무료 한도 확보를 위해 gemini-3.6-flash 에서 교체했다. 한도는 프로젝트당 모델당으로 잡힌다
+// 해소 26 이 확정한 모델명과 다르므로 AGENTS.md 와 docs/API.md 갱신이 필요하다
+const MODEL = 'gemini-3.5-flash-lite'
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta'
 
 // LLM 호출 총 예산. 재시도까지 이 안에서 끝낸다 (해소 26)
@@ -104,6 +106,7 @@ invalid일 때만 rejectReason을 채운다. 그 외에는 null이다.
   relationReason  relation이 similar/conflict일 때 왜 그렇게 판단했는지 한 줄. 그 외 null
 
 verdict가 valid가 아니면 cards는 빈 배열이다.
+verdict가 valid면 cards는 최소 1장이다. 빈 배열로 반환하지 않는다.
 
 === 3단계: 정보 요소 충족도 (elementCheck) ===
 
@@ -131,9 +134,17 @@ verdict가 invalid면 elementCheck는 null이다. insufficient면 판정한다.
 
 === 4단계: 관계 판정 (relation) ===
 
-판정 우선순위는 duplicate > similar > conflict > new 다.
+반드시 아래 순서로 확인한다. 앞 단계에서 결정되면 뒤 단계를 보지 않는다.
 
-duplicate  [이번 인터뷰 카드]에 같은 주장이 이미 있다. 표현만 달라도 같은 사실이면 duplicate다
+1) 먼저 [이번 인터뷰 카드]와 대조한다. 같은 사실이 이미 있으면 relation은 duplicate다.
+   [기존 암묵지]에 비슷한 것이 함께 있어도 duplicate가 similar보다 우선한다.
+   기사가 방금 한 말을 다른 표현으로 다시 설명한 경우가 여기에 해당한다.
+2) duplicate가 아닐 때만 [기존 암묵지]와 대조해 similar 또는 conflict를 판정한다.
+3) 둘 다 아니면 new다.
+
+duplicate  [이번 인터뷰 카드]에 같은 주장이 이미 있다. 표현만 달라도 같은 사실이면 duplicate다.
+           duplicate로 판정한 사실도 카드로 만들어 cards에 담아 반환한다. 생략하지 않는다.
+           그 카드를 실제로 저장하지 않는 처리는 서버가 한다
 similar    [기존 암묵지]에 같은 현장 사실이 있다. 표현이 달라도 같은 사실이면 similar다
 conflict   [기존 암묵지]와 양립할 수 없는 반대 사실이다
 new        어디에도 해당하지 않는다
