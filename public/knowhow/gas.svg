@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="주유소를 표현한 일러스트">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F6D88D"/><stop offset=".6" stop-color="#B8D4C1"/><stop offset="1" stop-color="#557565"/></linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#F7E84F"/><stop offset="1" stop-color="#E7B527"/></linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="112" cy="104" r="72" fill="#FFF7B1" opacity=".78"/>
+  <path d="M0 386c180-78 324-60 444 0s236 64 356 14v200H0Z" fill="#416151"/>
+  <path d="M72 214h612v58H72z" rx="18" fill="url(#roof)"/>
+  <path d="M112 272h24v213h-24zm505 0h24v213h-24z" fill="#ECE8D8"/>
+  <path d="M249 278h148v222H249z" rx="18" fill="#F4F0DE"/>
+  <path d="M274 310h98v70h-98z" rx="10" fill="#254C3D"/>
+  <path d="M287 327h72" stroke="#F6E74A" stroke-width="13" stroke-linecap="round"/>
+  <path d="M398 324c63 4 61 102 19 122" fill="none" stroke="#203D33" stroke-width="15" stroke-linecap="round"/>
+  <path d="M179 431h259l70 48v57H148v-64Z" fill="#E8D8B3"/>
+  <path d="M238 383h132l55 49H190Z" fill="#D7E6DE"/>
+  <circle cx="218" cy="535" r="31" fill="#203B31"/><circle cx="424" cy="535" r="31" fill="#203B31"/>
+  <circle cx="218" cy="535" r="12" fill="#A8B7B0"/><circle cx="424" cy="535" r="12" fill="#A8B7B0"/>
+  <path d="M0 548h800v52H0z" fill="#30483F"/><path d="M565 566h158" stroke="#F7E855" stroke-width="7" stroke-linecap="round"/>
+</svg>
