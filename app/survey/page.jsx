@@ -12,6 +12,7 @@ import {
   addInterviewItem,
   buildStructureRequest,
   getCurrentInterview,
+  getCards,
   getDraftCards,
   getPointBalance,
   publishCard,
@@ -134,6 +135,9 @@ export default function SurveyPage() {
   const question = followUpText || template(place ? place.name : center.name)
 
   const drafts = getDraftCards(state, interview.id)
+  // 관계로 연결된 기존 카드는 잠금 규칙을 그대로 따른다
+  // state.cards 를 직접 읽으면 해금하지 않은 남의 카드 제목이 새어 나간다 (해소 33)
+  const publishedCards = getCards(state)
   const items = state.interviewItems.filter((item) => item.interviewId === interview.id)
   const balance = getPointBalance(state, state.currentDriverId)
   const answer = sttText.trim()
@@ -421,7 +425,7 @@ export default function SurveyPage() {
               {drafts.map((card) => {
                 const relation = state.cardRelations.find((item) => item.cardId === card.id) || null
                 const related = relation
-                  ? state.cards.find((item) => item.id === relation.relatedCardId)
+                  ? publishedCards.find((item) => item.id === relation.relatedCardId)
                   : null
 
                 return (
@@ -443,7 +447,9 @@ export default function SurveyPage() {
                         : '새로 등록되는 암묵지예요'}
                     </p>
                     {related ? (
-                      <p className="mt-1 text-caption text-ink-500">연결 대상 · {related.title}</p>
+                      <p className="mt-1 text-caption text-ink-500">
+                        연결 대상 · {related.title || '잠긴 암묵지'}
+                      </p>
                     ) : null}
                   </article>
                 )
