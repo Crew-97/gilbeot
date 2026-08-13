@@ -95,6 +95,20 @@ export default function HomePage() {
         : [],
     [center, state.places]
   )
+  const centerCardCount = useMemo(
+    () =>
+      center
+        ? getCards(state, { centerId: center.id, category: 'center_tip' }).length
+        : 0,
+    [center, state]
+  )
+  const placeCardCounts = useMemo(
+    () =>
+      new Map(
+        places.map((place) => [place.id, getCards(state, { placeId: place.id }).length])
+      ),
+    [places, state]
+  )
 
   useEffect(() => {
     if (!dispatch || !center || !mapContainerRef.current) return
@@ -119,13 +133,13 @@ export default function HomePage() {
         })
         const bounds = new maps.LatLngBounds()
 
-        const addMarker = ({ lat, lng, label, onClick }) => {
+        const addMarker = ({ lat, lng, label, cardCount, onClick }) => {
           if (typeof lat !== 'number' || typeof lng !== 'number') return
           const position = new maps.LatLng(lat, lng)
           const marker = new maps.Marker({ map, position, title: label })
           const badge = document.createElement('button')
           badge.type = 'button'
-          badge.textContent = label
+          badge.textContent = cardCount == null ? label : `${label} · 암묵지 ${cardCount}건`
           badge.className =
             'min-h-11 rounded-pill border border-hairline bg-paper px-3 text-caption font-bold text-ink-000 shadow-lift'
           if (onClick) {
@@ -150,6 +164,7 @@ export default function HomePage() {
         addMarker({
           lat: center.lat,
           lng: center.lng,
+          cardCount: centerCardCount,
           label: `도착 ${center.name}`,
           onClick: () =>
             router.push(
@@ -160,6 +175,7 @@ export default function HomePage() {
           addMarker({
             lat: place.lat,
             lng: place.lng,
+            cardCount: placeCardCounts.get(place.id) || 0,
             label: `${CATEGORY_LABELS[place.category]} ${place.name}`,
             onClick: () =>
               router.push(
@@ -185,7 +201,7 @@ export default function HomePage() {
       active = false
       container.replaceChildren()
     }
-  }, [center, dispatch, places, router])
+  }, [center, centerCardCount, dispatch, placeCardCounts, places, router])
 
   if (!Array.isArray(state.centers) || !Array.isArray(state.places)) {
     return <ErrorState onRetry={() => window.location.reload()} />
@@ -208,8 +224,6 @@ export default function HomePage() {
   const balance = getPointBalance(state, state.currentDriverId)
   const driving = Boolean(dispatch.startedAt && !dispatch.endedAt)
   const ended = Boolean(dispatch.endedAt)
-  const candidates = state.triggerEvents.filter((event) => event.dispatchId === dispatch.id)
-
   const getCardCount = (condition) => getCards(state, condition).length
 
   const handleStart = () => {
@@ -293,30 +307,6 @@ export default function HomePage() {
           <dd className="font-bold text-ink-000">{center.handledItems || ''}</dd>
         </dl>
       </section>
-
-      {driving ? (
-        <section className="rounded-lg border border-hairline bg-accent-soft p-4">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-body font-bold text-ink-000">인터뷰 후보 감지</h2>
-            <MockBadge />
-          </div>
-          {candidates.length === 0 ? (
-            <p className="mt-2 text-body-sm text-ink-500">감지된 인터뷰 후보가 없어요.</p>
-          ) : (
-            candidates.map((candidate) => {
-              const place = state.places.find((item) => item.id === candidate.placeId)
-              return (
-                <p key={candidate.id} className="mt-2 text-body-sm font-bold text-ink-700">
-                  {place?.name || '주변 장소'} 반복 방문 {candidate.visitCount}회
-                </p>
-              )
-            })
-          )}
-          <p className="mt-2 text-caption text-ink-500">
-            운행 중에는 후보만 저장하고 인터뷰 질문은 보여주지 않아요.
-          </p>
-        </section>
-      ) : null}
 
       {failReason ? <p className="text-center text-body-sm text-danger">{failReason}</p> : null}
 
