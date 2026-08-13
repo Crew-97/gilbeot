@@ -1,12 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/Button'
 import { ErrorState } from '@/components/ErrorState'
 import { LockedCardSummary } from '@/components/LockedCardSummary'
-import { MockBadge } from '@/components/MockBadge'
-import { PointText } from '@/components/PointText'
 import { useStore } from '@/components/StoreProvider'
 import {
   getCards,
@@ -37,33 +35,192 @@ function FullWidthButton({ children, ...props }) {
   )
 }
 
-function PageHeader({ onBack, balance }) {
+function BackIcon() {
   return (
-    <header className="sticky top-0 z-20 -mx-4 flex h-14 items-center justify-between border-b border-hairline bg-page px-1">
-      <button
-        type="button"
-        onClick={onBack}
-        className="min-h-11 min-w-11 rounded-pill px-3 text-body-sm font-bold text-ink-700 transition-transform active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-000"
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M15 5 8 12l7 7"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function ProfileIcon() {
+  return (
+    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="8.2" r="3.2" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M5.8 19.2c.55-3.8 2.62-5.7 6.2-5.7s5.65 1.9 6.2 5.7"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function LocationIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 21s6-5.35 6-11a6 6 0 1 0-12 0c0 5.65 6 11 6 11Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="10" r="2" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  )
+}
+
+function ChevronIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="m9 5 7 7-7 7"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function ThumbIcon({ direction }) {
+  const transform = direction === 'down' ? 'rotate(180 12 12)' : undefined
+
+  return (
+    <svg
+      width="19"
+      height="19"
+      viewBox="0 0 24 24"
+      fill="none"
+      transform={transform}
+      aria-hidden="true"
+    >
+      <path
+        d="M7.5 20H5.2A2.2 2.2 0 0 1 3 17.8v-6.6A2.2 2.2 0 0 1 5.2 9h2.3m0 11V9l3.8-5.1c.75-1 2.35-.48 2.35.77V9h4.13a3 3 0 0 1 2.93 3.65l-1.1 5A3 3 0 0 1 16.7 20H7.5Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function ModalShell({ children, onBack, title = '노하우 상세' }) {
+  const backButtonRef = useRef(null)
+  const onBackRef = useRef(onBack)
+
+  useEffect(() => {
+    onBackRef.current = onBack
+  }, [onBack])
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    backButtonRef.current?.focus()
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onBackRef.current()
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/45 sm:items-center sm:p-4">
+      <main
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="card-detail-modal-title"
+        className="relative h-[calc(100dvh-12px)] w-full max-w-[430px] overflow-y-auto overscroll-contain rounded-t-[28px] bg-page shadow-overlay sm:h-[min(820px,calc(100dvh-32px))] sm:rounded-[28px]"
       >
-        뒤로
-      </button>
-      <span className="text-body-sm font-bold text-ink-000">지식 카드</span>
-      <div className="flex min-h-11 min-w-11 items-center justify-end">
-        {balance === null ? null : <PointText amount={balance} showSign={false} />}
-      </div>
-    </header>
+        <header className="sticky top-0 z-20 grid h-[68px] grid-cols-[46px_1fr_46px] items-center gap-3 border-b border-white/70 bg-[rgba(255,253,247,0.86)] px-5 backdrop-blur-xl">
+          <button
+            type="button"
+            ref={backButtonRef}
+            onClick={onBack}
+            aria-label="뒤로"
+            className="flex h-[46px] w-[46px] items-center justify-center rounded-[18px] border border-white/80 bg-white/60 text-ink-700 shadow-[0_6px_18px_rgba(82,57,18,0.12)] backdrop-blur-xl transition-transform active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-000"
+          >
+            <BackIcon />
+          </button>
+          <span
+            id="card-detail-modal-title"
+            className="truncate text-center text-[16px] font-bold leading-none text-ink-000"
+          >
+            {title}
+          </span>
+          <span aria-hidden="true" />
+        </header>
+        {children}
+      </main>
+    </div>
   )
 }
 
 function NotFoundState({ onBack }) {
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-[390px] px-4 pb-8">
-      <PageHeader onBack={onBack} balance={null} />
-      <section className="flex flex-col items-center justify-center gap-4 px-4 py-20 text-center">
-        <p className="text-body-sm text-ink-500">해당 암묵지를 찾을 수 없어요.</p>
+    <ModalShell onBack={onBack}>
+      <section className="flex flex-col items-center justify-center gap-4 px-6 py-24 text-center">
+        <p className="text-body-sm text-ink-500">해당 노하우를 찾을 수 없어요.</p>
         <Button onClick={onBack}>목록으로 돌아가기</Button>
       </section>
-    </main>
+    </ModalShell>
+  )
+}
+
+function AuthorMeta({ author, createdAt }) {
+  if (!author) return null
+
+  return (
+    <div className="mt-5 flex min-h-11 items-center gap-3" aria-label="작성자 정보">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink-050 text-ink-500">
+        <ProfileIcon />
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-[16px] font-bold leading-5 text-ink-000">
+          {author.name}
+        </span>
+        <span className="mt-0.5 block text-[12px] leading-4 text-ink-500">
+          작성 {formatDate(createdAt)}
+        </span>
+      </span>
+    </div>
+  )
+}
+
+function ContextCard({ category, locationName }) {
+  if (!locationName) return null
+
+  return (
+    <div className="mt-7 flex min-h-[76px] items-center gap-3 rounded-[18px] bg-[#fff0df] px-4 py-3.5">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[15px] bg-white/70 text-orange-500">
+        <LocationIcon />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[12px] font-bold leading-4 text-orange-500">
+          연결된 {CATEGORY_LABELS[category] || '장소'}
+        </span>
+        <span className="mt-0.5 block truncate text-[16px] font-bold leading-5 text-ink-000">
+          {locationName}
+        </span>
+      </span>
+      <span className="shrink-0 text-orange-500/70">
+        <ChevronIcon />
+      </span>
+    </div>
   )
 }
 
@@ -78,16 +235,18 @@ export default function CardDetailPage() {
     Array.isArray(state?.cards) &&
     Array.isArray(state?.centers) &&
     Array.isArray(state?.places) &&
+    Array.isArray(state?.drivers) &&
     Array.isArray(state?.evaluations) &&
     Array.isArray(state?.unlocks) &&
     Array.isArray(state?.pointTransactions)
 
   if (!hasRequiredData) {
     return (
-      <main className="mx-auto min-h-dvh w-full max-w-[390px] px-4 pb-8">
-        <PageHeader onBack={() => router.push('/cards')} balance={null} />
-        <ErrorState onRetry={() => window.location.reload()} />
-      </main>
+      <ModalShell onBack={() => router.push('/cards')}>
+        <div className="px-6 py-12">
+          <ErrorState onRetry={() => window.location.reload()} />
+        </div>
+      </ModalShell>
     )
   }
 
@@ -105,6 +264,7 @@ export default function CardDetailPage() {
     ? state.places.find((item) => item.id === card.placeId)
     : null
   const center = state.centers.find((item) => item.id === card.centerId)
+  const author = state.drivers.find((item) => item.id === card.authorDriverId)
   const locationName = place?.name || center?.name || ''
   const isOwnCard = card.authorDriverId === driverId
   const currentVote = state.evaluations.find(
@@ -151,148 +311,61 @@ export default function CardDetailPage() {
   }
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-[390px] px-4 pb-8">
-      <PageHeader onBack={() => router.back()} balance={balance} />
-
-      <div className="flex flex-col gap-8 py-6">
+    <ModalShell onBack={() => router.back()}>
+      <div className="px-6 pb-10 pt-5">
         {card.isUnlocked ? (
-          <section aria-labelledby="card-title" className="animate-card-in">
+          <article aria-labelledby="card-title" className="animate-card-in">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-xs border border-hairline bg-accent-soft px-1.5 py-0.5 text-micro font-bold tracking-wide text-ink-700">
+              <span className="rounded-pill bg-accent-soft px-2.5 py-1 text-[12px] font-bold leading-4 text-ink-700">
                 {CATEGORY_LABELS[card.category]}
               </span>
-              {locationName ? (
-                <span className="text-caption text-ink-500">{locationName}</span>
+              {card.crossCheckCount > 0 ? (
+                <span className="text-[12px] font-bold leading-4 text-success">
+                  {card.crossCheckCount}명의 기사가 확인
+                </span>
               ) : null}
             </div>
 
-            <p className="mt-5 text-caption font-bold text-ink-500">핵심 정보</p>
             <h1
               id="card-title"
-              className="mt-2 break-keep text-title-2 font-bold tracking-tight text-ink-000"
+              className="mt-3 break-keep text-[26px] font-extrabold leading-[1.3] tracking-[-0.025em] text-ink-000"
             >
               {card.title}
             </h1>
-          </section>
-        ) : (
-          // 잠긴 카드는 제목 없이 카테고리·장소·평가 수·작성일만 보여준다 (해소 33)
-          // 해금 버튼은 아래 해금 섹션이 담당하므로 onUnlock 을 넘기지 않는다
-          <section className="animate-card-in">
-            <LockedCardSummary card={card} placeName={locationName} />
-          </section>
-        )}
 
-        {!card.isUnlocked ? (
-          <section
-            aria-labelledby="unlock-title"
-            className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 id="unlock-title" className="text-body font-bold text-ink-000">
-                  10P로 암묵지를 열어요
-                </h2>
-                <p className="mt-1 text-caption text-ink-500">
-                  해금한 카드는 다시 볼 때 포인트가 차감되지 않아요.
-                </p>
-              </div>
-              <span className="shrink-0 rounded-pill bg-yellow-500 px-3 py-1 text-body-sm font-bold text-ink-000">
-                🔒 10P
-              </span>
-            </div>
+            <AuthorMeta author={author} createdAt={card.createdAt} />
+            <ContextCard category={card.category} locationName={locationName} />
 
-            <dl className="mt-5 grid grid-cols-2 gap-2 rounded-md bg-sunken p-3.5">
-              <div>
-                <dt className="text-caption text-ink-500">현재 포인트</dt>
-                <dd className="mt-1 text-title-3 font-bold tracking-tight text-ink-000">
-                  {balance}P
-                </dd>
-              </div>
-              <div>
-                <dt className="text-caption text-ink-500">필요 포인트</dt>
-                <dd className="mt-1 text-title-3 font-bold tracking-tight text-ink-000">
-                  {UNLOCK_COST}P
-                </dd>
-              </div>
-            </dl>
-
-            <div className="mt-5">
-              <FullWidthButton
-                onClick={handleUnlock}
-                disabled={!hasEnoughPoints}
-                disabledReason={
-                  hasEnoughPoints
-                    ? undefined
-                    : '포인트가 부족해요. 내 경험을 공유하고 포인트를 받아 보세요.'
-                }
-              >
-                10P로 열기
-              </FullWidthButton>
-            </div>
-
-            {!hasEnoughPoints ? (
-              <div className="mt-4">
-                <FullWidthButton onClick={() => router.push('/home')}>
-                  내 경험을 공유하고 포인트 받기
-                </FullWidthButton>
-              </div>
-            ) : null}
-          </section>
-        ) : (
-          <>
             {card.reason ? (
-              <section
-                aria-labelledby="reason-title"
-                className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
-              >
-                <h2 id="reason-title" className="text-body-sm font-bold text-ink-000">
+              <section aria-labelledby="reason-title" className="mt-8 border-t border-line-soft pt-6">
+                <h2 id="reason-title" className="text-[13px] font-bold leading-5 text-ink-500">
                   이유
                 </h2>
-                <p className="mt-2 break-keep text-body text-ink-700">{card.reason}</p>
+                <p className="mt-3 break-keep text-[16px] leading-[25px] text-ink-700">
+                  {card.reason}
+                </p>
               </section>
             ) : null}
 
-            <section
-              aria-label="암묵지 정보"
-              className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
-            >
-              <dl className="flex flex-col gap-3 text-body-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <dt className="text-ink-500">작성일</dt>
-                  <dd className="font-bold text-ink-700">{formatDate(card.createdAt)}</dd>
-                </div>
-                {card.crossCheckCount > 0 ? (
-                  <div className="flex items-center justify-between gap-4 border-t border-line-soft pt-3">
-                    <dt className="text-ink-500">교차 검증</dt>
-                    <dd className="font-bold text-ink-700">
-                      {card.crossCheckCount}명의 기사가 확인
-                    </dd>
-                  </div>
-                ) : null}
-              </dl>
-            </section>
-
-            <section
-              aria-labelledby="vote-title"
-              className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
-            >
-              <h2 id="vote-title" className="break-keep text-body font-bold text-ink-000">
-                이 암묵지가 도움이 됐나요?
+            <section aria-labelledby="vote-title" className="mt-8 border-t border-line-soft pt-6">
+              <h2 id="vote-title" className="break-keep text-[16px] font-bold leading-6 text-ink-000">
+                이 노하우가 도움이 됐나요?
               </h2>
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="mt-4 grid grid-cols-2 gap-2.5">
                 <button
                   type="button"
                   aria-pressed={currentVote === 'helpful'}
                   onClick={() => handleVote('helpful')}
                   disabled={isOwnCard}
                   className={
-                    'min-h-12 rounded-pill border px-3 text-body-sm font-bold transition-transform active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-000 disabled:cursor-not-allowed disabled:border-hairline disabled:bg-ink-050 disabled:text-ink-300 ' +
+                    'flex min-h-12 items-center justify-center gap-1.5 rounded-pill border px-3 text-[14px] font-bold leading-5 transition-transform active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-000 disabled:cursor-not-allowed disabled:border-hairline disabled:bg-ink-050 disabled:text-ink-300 ' +
                     (currentVote === 'helpful'
-                      ? 'border-yellow-500 bg-yellow-500 text-ink-000'
+                      ? 'border-[#ef6a5b] bg-[#fff0ed] text-[#e75c4f]'
                       : 'border-hairline bg-paper text-ink-700')
                   }
                 >
-                  👍 도움됐어요 {card.helpfulCount}
+                  <ThumbIcon direction="up" />
+                  <span>도움됐어요 {card.helpfulCount}</span>
                 </button>
                 <button
                   type="button"
@@ -300,52 +373,111 @@ export default function CardDetailPage() {
                   onClick={() => handleVote('not_helpful')}
                   disabled={isOwnCard}
                   className={
-                    'min-h-12 rounded-pill border px-3 text-body-sm font-bold transition-transform active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-000 disabled:cursor-not-allowed disabled:border-hairline disabled:bg-ink-050 disabled:text-ink-300 ' +
+                    'flex min-h-12 items-center justify-center gap-1.5 rounded-pill border px-3 text-[14px] font-bold leading-5 transition-transform active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-000 disabled:cursor-not-allowed disabled:border-hairline disabled:bg-ink-050 disabled:text-ink-300 ' +
                     (currentVote === 'not_helpful'
                       ? 'border-ink-000 bg-sunken text-ink-000'
                       : 'border-hairline bg-paper text-ink-700')
                   }
                 >
-                  👎 도움 안 됐어요 {card.notHelpfulCount}
+                  <ThumbIcon direction="down" />
+                  <span>도움 안 됐어요 {card.notHelpfulCount}</span>
                 </button>
               </div>
               {isOwnCard ? (
-                <p className="mt-3 text-caption text-ink-500">
-                  자기 카드는 평가할 수 없어요.
+                <p className="mt-3 text-[12px] leading-4 text-ink-500">
+                  자기 노하우는 평가할 수 없어요.
                 </p>
               ) : null}
             </section>
 
             {!isOwnCard && balance >= UNLOCK_COST ? (
-              <section className="rounded-md border border-hairline bg-sunken p-3.5">
-                <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-body-sm font-bold text-ink-000">시연용 포인트 상태</h2>
-                  <MockBadge />
-                </div>
-                <p className="mt-2 text-caption text-ink-500">
-                  여러 암묵지를 열어 잔액이 0P인 상태로 전환해요.
+              <section className="mt-8 border-t border-line-soft pt-6">
+                <p className="text-[13px] leading-5 text-ink-500">
+                  포인트를 모두 사용한 다음 흐름을 확인해요.
                 </p>
-                <div className="mt-4">
+                <div className="mt-3">
                   <FullWidthButton
                     variant="ghost"
                     onClick={handleLowBalanceDemo}
                     disabled={isChangingDemoState}
                     disabledReason={isChangingDemoState ? '상태를 전환하고 있어요.' : undefined}
                   >
-                    잔액 0P 상태로 전환
+                    잔액 0P 상태 보기
                   </FullWidthButton>
                 </div>
               </section>
             ) : null}
-          </>
+          </article>
+        ) : (
+          <article className="animate-card-in">
+            <section className="rounded-[18px] border border-hairline bg-paper p-4 shadow-block">
+              <LockedCardSummary card={card} placeName={locationName} />
+            </section>
+
+            <section
+              aria-labelledby="unlock-title"
+              className="mt-6 rounded-[18px] bg-[#fff0df] p-4"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h1 id="unlock-title" className="text-[20px] font-extrabold leading-[1.35] text-ink-000">
+                    10P로 노하우를 열어요
+                  </h1>
+                  <p className="mt-1.5 text-[13px] leading-5 text-ink-500">
+                    해금한 노하우는 다시 볼 때 포인트가 차감되지 않아요.
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-pill bg-yellow-500 px-3 py-1 text-[14px] font-bold leading-5 text-ink-000">
+                  🔒 10P
+                </span>
+              </div>
+
+              <dl className="mt-5 grid grid-cols-2 gap-2 rounded-[16px] bg-white/70 p-3.5">
+                <div>
+                  <dt className="text-[12px] leading-4 text-ink-500">현재 포인트</dt>
+                  <dd className="mt-1 text-[22px] font-bold leading-7 tracking-tight text-ink-000">
+                    {balance}P
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] leading-4 text-ink-500">필요 포인트</dt>
+                  <dd className="mt-1 text-[22px] font-bold leading-7 tracking-tight text-ink-000">
+                    {UNLOCK_COST}P
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-5">
+                <FullWidthButton
+                  onClick={handleUnlock}
+                  disabled={!hasEnoughPoints}
+                  disabledReason={
+                    hasEnoughPoints
+                      ? undefined
+                      : '포인트가 부족해요. 내 경험을 공유하고 포인트를 받아 보세요.'
+                  }
+                >
+                  10P로 열기
+                </FullWidthButton>
+              </div>
+
+              {!hasEnoughPoints ? (
+                <div className="mt-4">
+                  <FullWidthButton onClick={() => router.push('/home')}>
+                    내 경험을 공유하고 포인트 받기
+                  </FullWidthButton>
+                </div>
+              ) : null}
+            </section>
+          </article>
         )}
 
         {actionError ? (
-          <p role="alert" className="text-center text-caption text-danger">
+          <p role="alert" className="mt-6 text-center text-[13px] leading-5 text-danger">
             {actionError}
           </p>
         ) : null}
       </div>
-    </main>
+    </ModalShell>
   )
 }
