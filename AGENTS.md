@@ -190,12 +190,12 @@ gilbeot/
 ├─ components/
 ├─ lib/                         store.js, dataSource.js, distance.js, kakao.js
 ├─ data/                        drivers.json, centers.json, places.json, cards.json (+README.md 출처 기록)
-├─ ai/                          프롬프트·골든 테스트 (개발 전 준비물, 앱 런타임에 포함되지 않음)
-│  ├─ system_prompt.txt         프롬프트 원문의 단일 정본. route.js에 상수로 옮긴다
-│  ├─ fallback_response.json    LLM 실패 시 캐시 폴백 응답
+├─ ai/                          프롬프트·골든 테스트 — 준비 레포 전용. 당일 레포에 커밋하지 않는다 (2026-08-13 확정)
+│  ├─ system_prompt.txt         프롬프트 원문. 당일 레포의 정본은 route.js 상수다
+│  ├─ fallback_response.json    LLM 실패 시 캐시 폴백 응답 (route.js 상수로 복제됨)
 │  ├─ test_utterances.json      골든 테스트 12케이스
-│  ├─ run_tests.mjs             회귀 검증 스크립트 (node ai/run_tests.mjs)
-│  └─ results/                  테스트 결과. .gitignore 대상
+│  ├─ run_tests.mjs             회귀 검증 스크립트 — 준비 레포에서 실행 (node ai/run_tests.mjs)
+│  └─ results/                  테스트 결과. 양쪽 레포 모두 .gitignore 대상
 ├─ docs/                        길벗_서비스_기획서_v2.4.md(정본), 기능명세서, ERD.dbml, API.md, 이 파일
 ├─ playbook/                    당일 실행 지침. 앱 코드가 아니며 당일 레포로 옮기지 않는다
 │  ├─ ops/                      역할과 시간표, git 운영규칙, D-1 준비물
@@ -204,7 +204,7 @@ gilbeot/
 └─ .env.local                   .gitignore 필수
 ```
 
-`ai/`와 `data/`는 개발 시작 전에 준비된 자산이다. **프롬프트를 고치면 반드시 `node ai/run_tests.mjs`로 12케이스를 재확인한다.**
+`ai/`와 `data/`는 개발 시작 전에 준비된 자산이다. **당일 레포에는 `ai/`를 커밋하지 않는다** — 운영 공지의 사전 결과물 반입 금지에 따라 당일 레포 `.gitignore`가 `/ai/`를 막고 있으며, 프롬프트·폴백의 당일 레포 정본은 `app/api/structure/route.js` 상수다. **프롬프트를 고치면 준비 레포에서 `node ai/run_tests.mjs`로 12케이스를 재확인한 뒤 상수에 반영한다.**
 
 `playbook/`은 성격이 다르다. `ai/`와 `data/`는 앱이 쓰는 자산이지만 `playbook/`은 **앱을 만드는 데 쓰는 지침**이다. 당일 새 레포에는 옮기지 않고 이 준비 레포에만 남긴다. 빌드 프롬프트는 `playbook/prompts/00_계약헤더.md`를 앞에 붙여 사용하며, 정책과 용어의 정본은 언제나 이 파일이다.
 
