@@ -4,7 +4,7 @@
 
 MOVE-AI Challenge 2026 출품작. **MVP 설계를 가진 프로토타입**이다 — DB 없이 시드 JSON과 브라우저 인메모리 상태로 동작하며, 트럭커 연동 데이터는 Mock으로 재현한다.
 
-**배포 URL**: (Vercel 연결 후 기입)
+**배포 URL**: https://gilbeot-six.vercel.app
 
 ## 길벗은 내비게이션이 아니다
 
