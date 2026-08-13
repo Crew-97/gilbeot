@@ -1014,7 +1014,12 @@ export default function LandingPage() {
           <div className="reveal mt-10 flex flex-wrap justify-center gap-2.5 text-[12px] font-semibold text-ink-900/70" style={{ '--i': 3 }}>
             <span className="rounded-full bg-ink-900/5 px-3.5 py-1.5 ring-1 ring-ink-900/10">MOVE-AI Challenge 2026 출품</span>
             <span className="rounded-full bg-ink-900/5 px-3.5 py-1.5 ring-1 ring-ink-900/10">AI 비환각 원칙 적용</span>
-            <span className="rounded-full bg-ink-900/5 px-3.5 py-1.5 ring-1 ring-ink-900/10">관리자 검수 운영</span>
+            <Link
+              href="/admin"
+              className="rounded-full bg-ink-900/5 px-3.5 py-1.5 ring-1 ring-ink-900/10 underline underline-offset-2 transition-all duration-500 ease-spring hover:bg-ink-900/10"
+            >
+              관리자 검수 운영
+            </Link>
           </div>
           <p className="reveal mx-auto mt-8 max-w-md text-[12px] leading-relaxed text-ink-900/70" style={{ '--i': 4 }}>
             실제 서비스는 카카오 T 트럭커의 배차·위치·운행 데이터 연동을 전제로 설계했어요.
