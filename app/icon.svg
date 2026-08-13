@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="길벗">
-  <rect width="64" height="64" rx="14" fill="#FAE100"/>
-  <text
-    x="32" y="33"
-    text-anchor="middle" dominant-baseline="central"
-    font-family="'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif"
-    font-size="40" font-weight="800" fill="#0A0A0A"
-  >길</text>
-</svg>

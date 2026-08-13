@@ -3,13 +3,17 @@
 // 랜딩 (해소 34) — 서비스 한 줄 소개와 시작하기, 하단 관리자 링크
 // 관리자 링크는 반드시 next/link 다. 전체 리로드가 일어나면 시연 상태가 초기화된다
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 function BrandWordmark() {
   return (
-    <div className="inline-flex h-12 items-center rounded-pill bg-yellow-500 px-5 text-title-3 font-bold tracking-tight text-ink-000">
-      길벗
+    <div className="inline-flex items-center gap-2.5">
+      <Image src="/logo.png" alt="길벗 로고" width={48} height={48} priority />
+      <div className="inline-flex h-12 items-center rounded-pill bg-yellow-500 px-5 text-title-3 font-bold tracking-tight text-ink-000">
+        길벗
+      </div>
     </div>
   )
 }
