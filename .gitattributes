@@ -1,0 +1,10 @@
+# 팀에 Windows와 macOS가 섞여 있다. 텍스트 파일 줄바꿈을 정규화한다
+* text=auto
+
+# 바이너리는 변환하지 않는다
+*.woff2 binary
+*.woff binary
+*.ttf binary
+*.png binary
+*.jpg binary
+*.ico binary
