@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/Button'
 import { ErrorState } from '@/components/ErrorState'
+import { LockedCardSummary } from '@/components/LockedCardSummary'
 import { MockBadge } from '@/components/MockBadge'
 import { PointText } from '@/components/PointText'
 import { useStore } from '@/components/StoreProvider'
@@ -154,26 +155,32 @@ export default function CardDetailPage() {
       <PageHeader onBack={() => router.back()} balance={balance} />
 
       <div className="flex flex-col gap-8 py-6">
-        <section aria-labelledby="card-title" className="animate-card-in">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-xs border border-hairline bg-accent-soft px-1.5 py-0.5 text-micro font-bold tracking-wide text-ink-700">
-              {CATEGORY_LABELS[card.category]}
-            </span>
-            {locationName ? (
-              <span className="text-caption text-ink-500">{locationName}</span>
-            ) : null}
-          </div>
+        {card.isUnlocked ? (
+          <section aria-labelledby="card-title" className="animate-card-in">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-xs border border-hairline bg-accent-soft px-1.5 py-0.5 text-micro font-bold tracking-wide text-ink-700">
+                {CATEGORY_LABELS[card.category]}
+              </span>
+              {locationName ? (
+                <span className="text-caption text-ink-500">{locationName}</span>
+              ) : null}
+            </div>
 
-          <p className="mt-5 text-caption font-bold text-ink-500">
-            {card.isUnlocked ? '핵심 정보' : '🔒 잠긴 암묵지'}
-          </p>
-          <h1
-            id="card-title"
-            className="mt-2 break-keep text-title-2 font-bold tracking-tight text-ink-000"
-          >
-            {card.title}
-          </h1>
-        </section>
+            <p className="mt-5 text-caption font-bold text-ink-500">핵심 정보</p>
+            <h1
+              id="card-title"
+              className="mt-2 break-keep text-title-2 font-bold tracking-tight text-ink-000"
+            >
+              {card.title}
+            </h1>
+          </section>
+        ) : (
+          // 잠긴 카드는 제목 없이 카테고리·장소·평가 수·작성일만 보여준다 (해소 33)
+          // 해금 버튼은 아래 해금 섹션이 담당하므로 onUnlock 을 넘기지 않는다
+          <section className="animate-card-in">
+            <LockedCardSummary card={card} placeName={locationName} />
+          </section>
+        )}
 
         {!card.isUnlocked ? (
           <section

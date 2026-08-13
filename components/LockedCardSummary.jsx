@@ -7,7 +7,7 @@ import { Button } from '@/components/Button'
 // 제목이나 본문을 요약해 대신 보여주지 않는다 — 해금 구조가 무너진다
 
 const CATEGORY_LABELS = {
-  center_tip: '화물센터 팁',
+  center_tip: '센터팁',
   gas: '주유소',
   food: '식당',
   rest: '휴게소·쉼터',
@@ -31,13 +31,10 @@ export function LockedCardSummary({ card, placeName, onUnlock, failReason }) {
         {placeName ? <span className="text-caption text-ink-500">{placeName}</span> : null}
       </div>
 
-      <p className="mt-2 text-body-sm font-bold text-ink-000">잠긴 암묵지예요</p>
-
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-ink-500">
-        <span>👍 도움됐어요 {card.helpfulCount}</span>
-        <span>👎 도움 안 됐어요 {card.notHelpfulCount}</span>
+        <span>👍 {card.helpfulCount}</span>
+        <span>👎 {card.notHelpfulCount}</span>
         <span>작성 {formatDate(card.createdAt)}</span>
-        {card.crossCheckCount > 0 ? <span>{card.crossCheckCount}명의 기사가 확인</span> : null}
       </div>
 
       {onUnlock ? (

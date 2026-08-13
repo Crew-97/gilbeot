@@ -6,6 +6,7 @@ import { useStore } from '@/components/StoreProvider'
 import { createDispatch, getCards } from '@/lib/store'
 import { EmptyState } from '@/components/EmptyState'
 import { ErrorState } from '@/components/ErrorState'
+import { Header } from '@/components/Header'
 import { MockBadge } from '@/components/MockBadge'
 
 const MOCK_ORIGIN = {
@@ -40,14 +41,18 @@ export default function DestinationPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-6 px-4 py-6">
-      <header className="flex flex-col gap-2">
+    <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-6 px-4 pb-6">
+      <Header
+        title="출발지와 도착지를 입력하세요"
+        onBack={() => router.back()}
+      />
+
+      <div className="flex flex-col gap-2">
         <span className="text-caption font-bold text-ink-500">이번 운행</span>
-        <h1 className="text-title-2 tracking-tight text-ink-000">출발지와 도착지를 입력하세요</h1>
         <p className="text-body-sm text-ink-500">
           도착지와 주변 장소에 쌓인 암묵지를 먼저 확인할 수 있어요.
         </p>
-      </header>
+      </div>
 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">

@@ -6,6 +6,7 @@ import { useStore } from '@/components/StoreProvider'
 import { getCards } from '@/lib/store'
 import { EmptyState } from '@/components/EmptyState'
 import { ErrorState } from '@/components/ErrorState'
+import { LockedCardSummary } from '@/components/LockedCardSummary'
 
 const CATEGORIES = [
   { key: 'center_tip', label: '센터팁' },
@@ -91,23 +92,23 @@ function CardsContent() {
             const cardPlace = card.placeId
               ? state.places.find((item) => item.id === card.placeId)
               : null
+            const cardCenter =
+              card.category === 'center_tip'
+                ? state.centers.find((item) => item.id === card.centerId)
+                : null
 
             return (
               <article
                 key={card.id}
                 className="rounded-lg border border-hairline bg-paper p-4 shadow-block animate-card-in"
               >
-                <button
-                  type="button"
-                  onClick={() => router.push(`/cards/${encodeURIComponent(card.id)}`)}
-                  className="min-h-11 w-full text-left"
-                >
-                  <h2 className="text-body font-bold text-ink-000">
-                    {card.isUnlocked ? '' : '🔒 '}
-                    {card.title}
-                  </h2>
-
-                  {card.isUnlocked ? (
+                {card.isUnlocked ? (
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/cards/${encodeURIComponent(card.id)}`)}
+                    className="min-h-11 w-full text-left"
+                  >
+                    <h2 className="text-body font-bold text-ink-000">{card.title}</h2>
                     <>
                       {card.reason ? (
                         <p className="mt-2 line-clamp-1 text-body-sm text-ink-700">{card.reason}</p>
@@ -119,12 +120,14 @@ function CardsContent() {
                         <span>작성 {formatDate(card.createdAt)}</span>
                       </div>
                     </>
-                  ) : (
-                    <span className="mt-3 inline-flex min-h-11 items-center rounded-pill bg-yellow-500 px-4 text-body-sm font-bold text-ink-000">
-                      10P로 열기
-                    </span>
-                  )}
-                </button>
+                  </button>
+                ) : (
+                  <LockedCardSummary
+                    card={card}
+                    placeName={cardCenter?.name || cardPlace?.name || ''}
+                    onUnlock={() => router.push(`/cards/${encodeURIComponent(card.id)}`)}
+                  />
+                )}
               </article>
             )
           })}
