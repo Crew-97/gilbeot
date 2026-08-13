@@ -60,7 +60,7 @@ const ELEMENT_LABELS = {
 }
 
 const VERDICT_MESSAGES = {
-  valid: '유효한 암묵지로 판단했어요.',
+  valid: '유효한 노하우로 판단했어요.',
   insufficient: '내용이 조금 막연해요. 한 가지만 더 알려주시겠어요?',
 }
 
@@ -72,8 +72,8 @@ const REJECT_MESSAGES = {
 
 // 관계는 similar / conflict 만 저장된다. 저장된 관계가 없으면 신규다
 const RELATION_MESSAGES = {
-  similar: '기존 암묵지와 같은 내용이에요. 교차 검증으로 연결했어요',
-  conflict: '기존 암묵지와 다른 내용이에요. 별도 카드로 보존해요',
+  similar: '기존 노하우와 같은 내용이에요. 교차 검증으로 연결했어요',
+  conflict: '기존 노하우와 다른 내용이에요. 별도 카드로 보존해요',
 }
 
 export default function SurveyPage() {
@@ -421,7 +421,7 @@ export default function SurveyPage() {
 
           {drafts.length > 0 ? (
             <section className="flex flex-col gap-3">
-              <h2 className="text-body font-bold text-ink-000">게시할 암묵지 {drafts.length}건</h2>
+              <h2 className="text-body font-bold text-ink-000">게시할 노하우 {drafts.length}건</h2>
               {drafts.map((card) => {
                 const relation = state.cardRelations.find((item) => item.cardId === card.id) || null
                 const related = relation
@@ -444,11 +444,11 @@ export default function SurveyPage() {
                     <p className="mt-3 text-caption text-ink-500">
                       {relation
                         ? RELATION_MESSAGES[relation.relationType]
-                        : '새로 등록되는 암묵지예요'}
+                        : '새로 등록되는 노하우예요'}
                     </p>
                     {related ? (
                       <p className="mt-1 text-caption text-ink-500">
-                        연결 대상 · {related.title || '잠긴 암묵지'}
+                        연결 대상 · {related.title || '잠긴 노하우'}
                       </p>
                     ) : null}
                   </article>
