@@ -1,0 +1,50 @@
+{
+  "_readme": "LLM 호출 실패 시(네트워크 장애, 429, 파싱 실패, 모순 응답) route.js의 catch에서 반환할 사전 생성 응답. base_answer는 2026-08-12 골든 테스트 t01에서 gemini-3.6-flash가 실제로 생성한 출력이다. 선택 규칙 제안: 요청의 sessionCards가 비어 있으면 base_answer, 있으면 follow_up_answer를 반환한다. reject는 폴백 모드에서 자동 선택할 수 없으므로(판단 불가) 참고용이다. 폴백 응답은 시연 대사와 짝이 맞아야 자연스럽다 — 대사 변경 시 이 파일도 함께 갱신할 것.",
+  "demo_script": {
+    "base_answer_line": "센터 들어가기 전에 넣기 편해요. 군포센터 안에는 기름 넣을 데가 없거든요.",
+    "follow_up_answer_line": "네. 입구가 넓어서 11톤도 들어가기 어렵지 않아요."
+  },
+  "base_answer": {
+    "verdict": "valid",
+    "rejectReason": null,
+    "cards": [
+      {
+        "title": "센터 들어가기 전에 주유하기 편해요",
+        "reason": "군포센터 안에는 기름 넣을 데가 없어요",
+        "category": "gas",
+        "placeName": "군포하나로주유소",
+        "evidence": "센터 들어가기 전에 넣기 편해요. 군포센터 안에는 기름 넣을 데가 없거든요.",
+        "relation": "similar",
+        "relatedCardId": "card_010",
+        "relationReason": "센터 내 주유소가 없어 진입 전 주유하는 것이 좋다는 동일한 현장 사실을 언급함"
+      }
+    ],
+    "elementCheck": { "place": true, "vehicle": false, "time": false, "center": true, "reason": true },
+    "followUpQuestion": "대형 화물차도 들어가기 편한가요?"
+  },
+  "follow_up_answer": {
+    "verdict": "valid",
+    "rejectReason": null,
+    "cards": [
+      {
+        "title": "대형 화물차도 들어가기 편해요",
+        "reason": "입구가 넓어요",
+        "category": "gas",
+        "placeName": "군포하나로주유소",
+        "evidence": "네. 입구가 넓어서 11톤도 들어가기 어렵지 않아요.",
+        "relation": "new",
+        "relatedCardId": null,
+        "relationReason": null
+      }
+    ],
+    "elementCheck": { "place": true, "vehicle": true, "time": false, "center": false, "reason": true },
+    "followUpQuestion": null
+  },
+  "reject": {
+    "verdict": "invalid",
+    "rejectReason": "no_information",
+    "cards": [],
+    "elementCheck": null,
+    "followUpQuestion": null
+  }
+}
