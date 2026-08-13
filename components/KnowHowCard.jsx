@@ -112,15 +112,17 @@ export function KnowHowCard({
   }
 
   return (
-    <article className={`${styles.card} ${isLocked ? styles.cardLocked : ''}`}>
-      <div className={`${styles.colorPanel} ${TONE_CLASSES[resolvedTone]}`}>
-        {!isLocked ? (
-          <>
+    <article
+      className={`${styles.card} ${TONE_CLASSES[resolvedTone]} ${isLocked ? styles.cardLocked : ''}`}
+    >
+      {!isLocked ? (
+        <div className={styles.cardHeader}>
+          <div className={styles.cardIdentity}>
             <span className={styles.categoryBadge}>{categoryConfig.label}</span>
             {locationName ? <span className={styles.locationName}>{locationName}</span> : null}
-          </>
-        ) : null}
-      </div>
+          </div>
+        </div>
+      ) : null}
 
       {!isLocked ? (
         <button

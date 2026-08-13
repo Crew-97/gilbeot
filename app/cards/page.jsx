@@ -30,6 +30,8 @@ const CATEGORY_IMAGES = {
   rest: '/knowhow/rest.svg',
 }
 
+const FEATURE_AUTO_ADVANCE_MS = 5000
+
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" width="21" height="21" fill="none" aria-hidden="true">
@@ -241,6 +243,16 @@ function CardsContent() {
     if (searchOpen) searchInputRef.current?.focus()
   }, [searchOpen])
 
+  useEffect(() => {
+    if (featuredCards.length < 2) return undefined
+
+    const timer = window.setInterval(() => {
+      setFeaturedIndex((current) => (current + 1) % featuredCards.length)
+    }, FEATURE_AUTO_ADVANCE_MS)
+
+    return () => window.clearInterval(timer)
+  }, [featuredCards.length])
+
   if (!hasRequiredData) {
     return (
       <main className={styles.page}>
@@ -405,6 +417,7 @@ function CardsContent() {
                 </div>
               ) : null}
               <FeaturedCard
+                key={activeFeatured.id}
                 card={activeFeatured}
                 rank={featuredIndex + 1}
                 state={state}

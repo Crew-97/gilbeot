@@ -273,7 +273,7 @@
 }
 
 @keyframes feature-enter {
-  from { opacity: 0.82; transform: translateX(8px) scale(0.99); }
+  from { opacity: 0.68; transform: translateX(20px) scale(0.985); }
   to { opacity: 1; transform: none; }
 }
 
@@ -448,8 +448,9 @@
 }
 
 .masonryGrid {
-  columns: 2;
-  column-gap: 11px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
 }
 
 .bottomCta {
