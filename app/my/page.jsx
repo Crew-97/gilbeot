@@ -8,16 +8,16 @@ import { getPointBalance, getPointTransactions } from '@/lib/store'
 
 const TRANSACTION_LABELS = {
   signup_bonus: '가입 축하 포인트',
-  interview_reward: '암묵지 기여',
+  interview_reward: '노하우 기여',
   extra_reward: '추가 음성 기여 보너스',
-  unlock_spend: '암묵지 해금',
+  unlock_spend: '노하우 해금',
 }
 
 const POINT_RULES = [
   { label: '최초 가입', amount: '+100P' },
-  { label: '유효한 암묵지 기여', amount: '+100P' },
+  { label: '유효한 노하우 기여', amount: '+100P' },
   { label: '추가 음성 기여 보너스', detail: '인터뷰당 최대 +50P', amount: '+10P/건' },
-  { label: '암묵지 1건 해금', detail: '재열람 무료', amount: '-10P' },
+  { label: '노하우 1건 해금', detail: '재열람 무료', amount: '-10P' },
 ]
 
 function formatDateTime(value) {
@@ -65,6 +65,7 @@ export default function MyPage() {
   const hasRequiredData =
     state &&
     typeof state.currentDriverId === 'string' &&
+    Array.isArray(state.drivers) &&
     Array.isArray(state.pointTransactions) &&
     Array.isArray(state.interviews) &&
     Array.isArray(state.cards) &&
@@ -97,6 +98,16 @@ export default function MyPage() {
 
   const transactions = getPointTransactions(state, state.currentDriverId)
   const balance = getPointBalance(state, state.currentDriverId)
+  const driver = state.drivers.find((item) => item.id === state.currentDriverId)
+  const profileDetail = driver
+    ? [
+        driver.age == null ? null : `${driver.age}세`,
+        driver.careerYears == null ? null : `경력 ${driver.careerYears}년`,
+        driver.baseRegion || null,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : ''
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col px-4 py-6 font-sans">
@@ -106,6 +117,31 @@ export default function MyPage() {
         </h1>
       </header>
 
+      {driver ? (
+        <section
+          className="mt-3 flex items-center gap-4 rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
+          aria-labelledby="profile-title"
+        >
+          <span
+            aria-hidden="true"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-yellow-500 text-title-3 font-bold text-ink-000"
+          >
+            {driver.name ? driver.name.charAt(0) : ''}
+          </span>
+          <div className="min-w-0">
+            <h2
+              id="profile-title"
+              className="text-title-3 font-bold tracking-tight text-ink-000"
+            >
+              {driver.name}
+            </h2>
+            {profileDetail ? (
+              <p className="mt-1 text-caption text-ink-500">{profileDetail}</p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
+
       <section
         className="mt-3 rounded-lg border border-yellow-600/20 bg-yellow-500 p-3.5 text-ink-000 animate-card-in"
         aria-labelledby="point-balance-title"
@@ -114,7 +150,7 @@ export default function MyPage() {
           보유 포인트
         </h2>
         <PointText amount={balance} showSign={false} className="mt-1 block text-title-1" />
-        <p className="mt-2 text-caption">다른 기사의 암묵지를 1건에 10P로 열 수 있어요.</p>
+        <p className="mt-2 text-caption">다른 기사의 노하우를 1건에 10P로 열 수 있어요.</p>
       </section>
 
       <section
@@ -144,7 +180,7 @@ export default function MyPage() {
           ))}
         </dl>
         <p className="mt-2 border-t border-line-soft pt-3 text-caption text-ink-500">
-          포인트는 암묵지 해금에만 써요. 유효한 기여는 게시를 완료해야 적립돼요.
+          포인트는 노하우 해금에만 써요. 유효한 기여는 게시를 완료해야 적립돼요.
         </p>
       </section>
 

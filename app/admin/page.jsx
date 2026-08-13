@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { EmptyState } from '@/components/EmptyState'
 import { ErrorState } from '@/components/ErrorState'
-import { MockBadge } from '@/components/MockBadge'
 import { useStore } from '@/components/StoreProvider'
+import { loadKakaoMaps } from '@/lib/kakao'
 import { applyAdminAction, getAllCards } from '@/lib/store'
 
 const VIEWS = [
@@ -206,15 +206,17 @@ function MetricCard({ label, value, detail, accent = false }) {
   return (
     <article
       className={
-        'min-h-[132px] rounded-lg border p-3.5 shadow-block animate-card-in ' +
+        'flex min-h-[112px] flex-col justify-between rounded-lg border p-4 shadow-block animate-card-in ' +
         (accent
           ? 'border-yellow-600/20 bg-yellow-500 text-ink-000'
-          : 'border-hairline bg-paper text-ink-700')
+          : 'border-hairline bg-sunken text-ink-700')
       }
     >
       <p className="text-caption font-bold">{label}</p>
-      <p className="mt-3 text-title-1 font-bold tracking-tight text-ink-000">{value}</p>
-      {detail ? <p className="mt-2 text-caption text-ink-500">{detail}</p> : null}
+      <div className="mt-3">
+        <p className="text-title-1 font-bold tracking-tight text-ink-000">{value}</p>
+        {detail ? <p className="mt-1 text-caption text-ink-500">{detail}</p> : null}
+      </div>
     </article>
   )
 }
@@ -574,7 +576,7 @@ function DashboardView({ state, cards, onOpenCard, onOpenReview }) {
         </p>
       </header>
 
-      <section className="mt-6 grid grid-cols-4 gap-3" aria-label="관리자 현황 요약">
+      <section className="mt-4 grid grid-cols-4 gap-3" aria-label="관리자 현황 요약">
         <MetricCard label="전체 지식 카드" value={`${cards.length}건`} accent />
         <MetricCard label="게시 중" value={`${publishedCount}건`} detail="기사 화면 노출 상태" />
         <MetricCard label="검토 필요" value={`${reviewCount}건`} detail="평가 임계값 자동 분류" />
@@ -585,9 +587,9 @@ function DashboardView({ state, cards, onOpenCard, onOpenReview }) {
         />
       </section>
 
-      <div className="mt-3 grid grid-cols-[1.1fr_.9fr] gap-3">
-        <section className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
-          <SectionHeading eyebrow="실동작" title="카테고리별 비율" />
+      <div className="mt-3 grid grid-cols-[minmax(0,1.1fr)_minmax(0,.9fr)] gap-3">
+        <section className="min-w-0 rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
+          <SectionHeading eyebrow="카드 분포" title="카테고리별 비율" />
           <div className="mt-5 flex flex-col gap-4">
             {categoryCounts.map(({ category, count }) => (
               <div key={category}>
@@ -608,8 +610,8 @@ function DashboardView({ state, cards, onOpenCard, onOpenReview }) {
           </div>
         </section>
 
-        <section className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
-          <SectionHeading eyebrow="실동작" title="상태별 건수" />
+        <section className="min-w-0 rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
+          <SectionHeading eyebrow="카드 상태" title="상태별 건수" />
           <dl className="mt-4 flex flex-col">
             {statusCounts.map(({ status, count }, index) => (
               <div
@@ -629,9 +631,9 @@ function DashboardView({ state, cards, onOpenCard, onOpenReview }) {
         </section>
       </div>
 
-      <div className="mt-3 grid grid-cols-[.9fr_1.1fr] gap-3">
-        <section className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
-          <SectionHeading eyebrow="센터별 암묵지 수는 실동작" title="화물센터 방문 현황" meta={<MockBadge />} />
+      <div className="mt-3 grid grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] gap-3">
+        <section className="min-w-0 rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
+          <SectionHeading eyebrow="센터별 현황" title="화물센터 방문 현황" />
           {centers.length === 0 ? (
             <EmptyState message="표시할 방문 통계가 없어요." />
           ) : (
@@ -663,10 +665,10 @@ function DashboardView({ state, cards, onOpenCard, onOpenReview }) {
           )}
         </section>
 
-        <section className="rounded-lg border border-hairline bg-paper shadow-block">
+        <section className="min-w-0 rounded-lg border border-hairline bg-paper shadow-block">
           <div className="p-3.5">
             <SectionHeading
-              eyebrow="실동작"
+              eyebrow="최근 등록"
               title="최근 암묵지"
               meta={<span className="text-caption text-ink-500">최신순</span>}
             />
@@ -701,7 +703,7 @@ function DashboardView({ state, cards, onOpenCard, onOpenReview }) {
 
       <section className="mt-3 rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
         <SectionHeading
-          eyebrow="실동작"
+          eyebrow="검증 현황"
           title="교차 검증 연결 현황"
           meta={
             reviewCount > 0 ? (
@@ -849,31 +851,51 @@ function CardsView({ state, cards, selectedCard, onSelectCard }) {
   )
 }
 
-function getMarkerPosition(center, centers) {
-  const valid = centers.filter(
-    (item) => typeof item.lat === 'number' && typeof item.lng === 'number'
+function AdminMapFallback({ centers, cards, selectedCenter, onSelectCenter }) {
+  return (
+    <div className="min-h-[360px] bg-[linear-gradient(#F1E8D8_1px,transparent_1px),linear-gradient(90deg,#F1E8D8_1px,transparent_1px)] bg-[size:28px_28px] p-5">
+      <div className="rounded-md border border-hairline bg-paper p-4 shadow-block">
+        <p className="text-body-sm font-bold text-ink-000">지도를 불러올 수 없어요.</p>
+        <p className="mt-1 text-caption text-ink-500">
+          아래 화물센터를 선택해 방문 현황을 계속 확인하세요.
+        </p>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {centers.map((center) => {
+          const active = selectedCenter?.id === center.id
+          const cardCount = cards.filter((card) => card.centerId === center.id).length
+          return (
+            <button
+              key={center.id}
+              type="button"
+              onClick={() => onSelectCenter(center.id)}
+              aria-pressed={active}
+              className={
+                'flex min-h-14 items-center justify-between gap-4 rounded-md border px-4 text-left shadow-block transition-transform active:scale-[0.99] ' +
+                (active
+                  ? 'border-yellow-600 bg-yellow-500 text-ink-000'
+                  : 'border-hairline bg-paper text-ink-700')
+              }
+            >
+              <span className="text-body-sm font-bold">{center.name}</span>
+              <span className="shrink-0 text-caption">
+                {center.visitCount.toLocaleString('ko-KR')}회 · 암묵지 {cardCount}건
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
-  if (valid.length === 0) return { left: '50%', top: '50%' }
-
-  const latitudes = valid.map((item) => item.lat)
-  const longitudes = valid.map((item) => item.lng)
-  const minLat = Math.min(...latitudes)
-  const maxLat = Math.max(...latitudes)
-  const minLng = Math.min(...longitudes)
-  const maxLng = Math.max(...longitudes)
-  const latRange = maxLat - minLat || 1
-  const lngRange = maxLng - minLng || 1
-  const index = valid.findIndex((item) => item.id === center.id)
-  const verticalOffset = index > 0 ? index * 7 : 0
-
-  return {
-    left: `${12 + ((center.lng - minLng) / lngRange) * 76}%`,
-    top: `${Math.min(86, 12 + (1 - (center.lat - minLat) / latRange) * 68 + verticalOffset)}%`,
-  }
 }
 
 function VisitsView({ state, cards, selectedCenterId, onSelectCenter }) {
-  const centers = [...state.centers].sort((a, b) => b.visitCount - a.visitCount)
+  const mapContainerRef = useRef(null)
+  const [mapStatus, setMapStatus] = useState('loading')
+  const centers = useMemo(
+    () => [...state.centers].sort((a, b) => b.visitCount - a.visitCount),
+    [state.centers]
+  )
   const selectedCenter =
     centers.find((center) => center.id === selectedCenterId) || centers[0] || null
   const places = selectedCenter
@@ -884,20 +906,85 @@ function VisitsView({ state, cards, selectedCenterId, onSelectCenter }) {
   const totalVisits = centers.reduce((sum, center) => sum + center.visitCount, 0)
   const endedDispatches = state.dispatches.filter((dispatch) => dispatch.endedAt).length
 
+  useEffect(() => {
+    if (centers.length === 0 || !mapContainerRef.current) return
+
+    let active = true
+    const container = mapContainerRef.current
+
+    const renderMap = async () => {
+      setMapStatus('loading')
+      const maps = await loadKakaoMaps()
+      if (!active) return
+      if (!maps) {
+        setMapStatus('fallback')
+        return
+      }
+
+      try {
+        const validCenters = centers.filter(
+          (center) => typeof center.lat === 'number' && typeof center.lng === 'number'
+        )
+        if (validCenters.length === 0) {
+          setMapStatus('fallback')
+          return
+        }
+
+        const firstPosition = new maps.LatLng(validCenters[0].lat, validCenters[0].lng)
+        const map = new maps.Map(container, { center: firstPosition, level: 13 })
+        const bounds = new maps.LatLngBounds()
+
+        validCenters.forEach((center) => {
+          const position = new maps.LatLng(center.lat, center.lng)
+          const marker = new maps.Marker({ map, position, title: center.name })
+          const cardCount = state.cards.filter((card) => card.centerId === center.id).length
+          const badge = document.createElement('button')
+
+          badge.type = 'button'
+          badge.textContent = `${center.name} · 암묵지 ${cardCount}건`
+          badge.className =
+            'min-h-11 whitespace-nowrap rounded-pill border border-hairline bg-paper px-3 text-caption font-bold text-ink-700 shadow-lift'
+          badge.addEventListener('click', () => onSelectCenter(center.id))
+          maps.event.addListener(marker, 'click', () => onSelectCenter(center.id))
+
+          new maps.CustomOverlay({
+            map,
+            position,
+            content: badge,
+            yAnchor: 1.9,
+            clickable: true,
+          })
+          bounds.extend(position)
+        })
+
+        map.setBounds(bounds, 56, 56, 56, 56)
+        setMapStatus('ready')
+      } catch {
+        if (active) setMapStatus('fallback')
+      }
+    }
+
+    renderMap()
+
+    return () => {
+      active = false
+      container.replaceChildren()
+    }
+  }, [centers, onSelectCenter, state.cards])
+
   return (
     <div className="animate-card-in">
       <header className="flex items-start justify-between gap-6">
         <div>
-          <p className="text-caption font-bold text-ink-500">트럭커 연동 전제</p>
+          <p className="text-caption font-bold text-ink-500">센터와 주변 장소</p>
           <h1 className="mt-1 text-title-2 font-bold tracking-tight text-ink-000">방문 현황</h1>
           <p className="mt-2 text-body-sm text-ink-500">
             화물센터와 주변 장소의 방문·정차 현황을 확인하세요. 경로는 표시하지 않아요.
           </p>
         </div>
-        <MockBadge />
       </header>
 
-      <section className="mt-6 grid grid-cols-3 gap-3" aria-label="Mock 운행 현황 요약">
+      <section className="mt-4 grid grid-cols-3 gap-3" aria-label="운행 현황 요약">
         <MetricCard
           label="센터 방문 합계"
           value={`${totalVisits.toLocaleString('ko-KR')}회`}
@@ -916,53 +1003,43 @@ function VisitsView({ state, cards, selectedCenterId, onSelectCenter }) {
         />
       </section>
 
-      <div className="mt-3 grid grid-cols-[1.15fr_.85fr] gap-3">
-        <section className="overflow-hidden rounded-lg border border-hairline bg-paper shadow-block">
-          <div className="flex items-center justify-between border-b border-line-soft p-3.5">
+      <div className="mt-3 grid grid-cols-[minmax(0,1.15fr)_minmax(0,.85fr)] gap-3">
+        <section className="min-w-0 overflow-hidden rounded-lg border border-hairline bg-paper shadow-block">
+          <div className="border-b border-line-soft p-3.5">
             <h2 className="text-body font-bold text-ink-000">화물센터 위치 현황</h2>
-            <MockBadge />
           </div>
           {centers.length === 0 ? (
             <EmptyState message="표시할 화물센터가 없어요." />
           ) : (
-            <div className="relative h-[430px] bg-sunken bg-[linear-gradient(#F1E8D8_1px,transparent_1px),linear-gradient(90deg,#F1E8D8_1px,transparent_1px)] bg-[size:28px_28px]">
-              {centers.map((center) => {
-                const position = getMarkerPosition(center, centers)
-                const active = selectedCenter?.id === center.id
-                const cardCount = cards.filter((card) => card.centerId === center.id).length
-                return (
-                  <button
-                    key={center.id}
-                    type="button"
-                    onClick={() => onSelectCenter(center.id)}
-                    aria-pressed={active}
-                    style={position}
-                    className={
-                      'absolute min-h-11 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-pill border px-3 text-left shadow-lift transition-transform hover:z-20 active:scale-[0.97] ' +
-                      (active
-                        ? 'z-10 border-yellow-600 bg-yellow-500 text-ink-000'
-                        : 'border-hairline bg-paper text-ink-700')
-                    }
-                  >
-                    <span className="block text-caption font-bold">{center.name}</span>
-                    <span className="block text-micro">
-                      {center.visitCount.toLocaleString('ko-KR')}회 · 암묵지 {cardCount}건
-                    </span>
-                  </button>
-                )
-              })}
-              <p className="absolute bottom-4 left-4 rounded-sm border border-hairline bg-paper px-3 py-2 text-caption text-ink-500 shadow-block">
-                방문 횟수는 Mock이고 암묵지 수는 실제 저장 상태예요.
-              </p>
+            <div>
+              <div className={mapStatus === 'fallback' ? 'hidden' : 'relative'}>
+                <div
+                  ref={mapContainerRef}
+                  className="h-[360px] w-full"
+                  aria-label="화물센터 위치 지도"
+                />
+                {mapStatus === 'loading' ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-sunken text-body-sm text-ink-500">
+                    지도를 불러오고 있어요.
+                  </div>
+                ) : null}
+              </div>
+              {mapStatus === 'fallback' ? (
+                <AdminMapFallback
+                  centers={centers}
+                  cards={cards}
+                  selectedCenter={selectedCenter}
+                  onSelectCenter={onSelectCenter}
+                />
+              ) : null}
             </div>
           )}
         </section>
 
-        <section className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
+        <section className="min-w-0 rounded-lg border border-hairline bg-paper p-3.5 shadow-block">
           <SectionHeading
             eyebrow="주변 장소"
             title={selectedCenter?.name || '화물센터를 선택하세요'}
-            meta={<MockBadge />}
           />
           {places.length === 0 ? (
             <EmptyState message="이 센터 주변에 등록된 장소가 아직 없어요." />
@@ -1042,12 +1119,12 @@ function AdminShell({ view, reviewCount, onChangeView, children }) {
           </nav>
 
           <div className="mt-auto rounded-md bg-sunken p-3 text-micro leading-relaxed text-ink-500">
-            방문·정차 및 운행 종료 데이터는 트럭커 연동 전제의 Mock이에요.
+            암묵지와 현장 방문 현황을 한 화면에서 확인하세요.
           </div>
         </aside>
 
-        <main className="min-w-0 flex-1 px-10 pb-12 pt-8">
-          <div className="mb-6 flex min-h-12 items-center rounded-md border border-hairline bg-paper px-4 text-body-sm text-ink-700 shadow-block">
+        <main className="min-w-0 flex-1 px-8 pb-10 pt-6">
+          <div className="mb-4 flex min-h-11 items-center rounded-md border border-hairline bg-paper px-4 text-body-sm text-ink-700 shadow-block">
             시연용 관리자 화면입니다. 실서비스에서는 운영자 인증이 필요합니다
           </div>
           {children}

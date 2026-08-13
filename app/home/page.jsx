@@ -15,7 +15,6 @@ import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
 import { ErrorState } from '@/components/ErrorState'
 import { Header } from '@/components/Header'
-import { MockBadge } from '@/components/MockBadge'
 import { PointText } from '@/components/PointText'
 
 const CATEGORY_LABELS = {
@@ -48,7 +47,7 @@ function MapFallback({ center, places, getCardCount, onSelectCenter, onSelectPla
             onClick={onSelectCenter}
             className="min-h-11 rounded-pill bg-accent-soft px-3 text-caption font-bold text-ink-700"
           >
-            암묵지 {getCardCount({ centerId: center.id, category: 'center_tip' })}건
+            노하우 {getCardCount({ centerId: center.id, category: 'center_tip' })}건
           </button>
         </div>
       </div>
@@ -68,7 +67,7 @@ function MapFallback({ center, places, getCardCount, onSelectCenter, onSelectPla
               <span className="mt-1 block text-body-sm font-bold text-ink-000">{place.name}</span>
             </span>
             <span className="text-caption font-bold text-ink-500">
-              암묵지 {getCardCount({ placeId: place.id })}건
+              노하우 {getCardCount({ placeId: place.id })}건
             </span>
           </button>
         ))
@@ -140,7 +139,7 @@ export default function HomePage() {
           const marker = new maps.Marker({ map, position, title: label })
           const badge = document.createElement('button')
           badge.type = 'button'
-          badge.textContent = cardCount == null ? label : `${label} · 암묵지 ${cardCount}건`
+          badge.textContent = cardCount == null ? label : `${label} · 노하우 ${cardCount}건`
           badge.className =
             'min-h-11 rounded-pill border border-hairline bg-paper px-3 text-caption font-bold text-ink-000 shadow-lift'
           if (onClick) {
@@ -264,9 +263,8 @@ export default function HomePage() {
       />
 
       <section className="overflow-hidden rounded-lg border border-hairline bg-paper shadow-block">
-        <div className="flex items-center justify-between border-b border-hairline px-4 py-3">
+        <div className="border-b border-hairline px-4 py-3">
           <h2 className="text-body font-bold text-ink-000">출발지와 주변 장소</h2>
-          <MockBadge />
         </div>
 
         <div className={mapStatus === 'fallback' ? 'hidden' : 'relative'}>
@@ -289,10 +287,7 @@ export default function HomePage() {
       </section>
 
       <section className="rounded-lg border border-hairline bg-paper p-4 shadow-block">
-        <div className="flex items-center justify-between">
-          <h2 className="text-body font-bold text-ink-000">센터 요약 정보</h2>
-          <MockBadge />
-        </div>
+        <h2 className="text-body font-bold text-ink-000">센터 요약 정보</h2>
         <dl className="mt-4 grid grid-cols-[110px_1fr] gap-y-3 text-body-sm">
           <dt className="text-ink-500">물류 원가</dt>
           <dd className="font-bold text-ink-000">
@@ -325,7 +320,7 @@ export default function HomePage() {
         )}
         {driving ? (
           <span className="absolute top-full mt-1 text-caption text-ink-500">
-            운행 종료는 도착지 도달을 재현하는 Mock 이벤트예요.
+            도착지에 도달하면 운행 종료를 누르세요.
           </span>
         ) : null}
       </div>
