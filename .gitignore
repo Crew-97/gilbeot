@@ -45,3 +45,6 @@ playbook/
 
 # 골든 테스트 결과
 /ai/results/
+
+# AI 프롬프트 검증 자산 (정본은 준비 레포 ai/ — route.js 상수가 레포 내 정본)
+/ai/
