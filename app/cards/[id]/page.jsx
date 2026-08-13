@@ -5,7 +5,6 @@ import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/Button'
 import { ErrorState } from '@/components/ErrorState'
 import { LockedCardSummary } from '@/components/LockedCardSummary'
-import { MockBadge } from '@/components/MockBadge'
 import { PointText } from '@/components/PointText'
 import { useStore } from '@/components/StoreProvider'
 import {
@@ -60,7 +59,7 @@ function NotFoundState({ onBack }) {
     <main className="mx-auto min-h-dvh w-full max-w-[390px] px-4 pb-8">
       <PageHeader onBack={onBack} balance={null} />
       <section className="flex flex-col items-center justify-center gap-4 px-4 py-20 text-center">
-        <p className="text-body-sm text-ink-500">해당 암묵지를 찾을 수 없어요.</p>
+        <p className="text-body-sm text-ink-500">해당 노하우를 찾을 수 없어요.</p>
         <Button onClick={onBack}>목록으로 돌아가기</Button>
       </section>
     </main>
@@ -190,7 +189,7 @@ export default function CardDetailPage() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 id="unlock-title" className="text-body font-bold text-ink-000">
-                  10P로 암묵지를 열어요
+                  10P로 노하우를 열어요
                 </h2>
                 <p className="mt-1 text-caption text-ink-500">
                   해금한 카드는 다시 볼 때 포인트가 차감되지 않아요.
@@ -253,7 +252,7 @@ export default function CardDetailPage() {
             ) : null}
 
             <section
-              aria-label="암묵지 정보"
+              aria-label="노하우 정보"
               className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
             >
               <dl className="flex flex-col gap-3 text-body-sm">
@@ -277,7 +276,7 @@ export default function CardDetailPage() {
               className="rounded-lg border border-hairline bg-paper p-3.5 shadow-block animate-card-in"
             >
               <h2 id="vote-title" className="break-keep text-body font-bold text-ink-000">
-                이 암묵지가 도움이 됐나요?
+                이 노하우가 도움이 됐나요?
               </h2>
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <button
@@ -318,12 +317,9 @@ export default function CardDetailPage() {
 
             {!isOwnCard && balance >= UNLOCK_COST ? (
               <section className="rounded-md border border-hairline bg-sunken p-3.5">
-                <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-body-sm font-bold text-ink-000">시연용 포인트 상태</h2>
-                  <MockBadge />
-                </div>
+                <h2 className="text-body-sm font-bold text-ink-000">시연용 포인트 상태</h2>
                 <p className="mt-2 text-caption text-ink-500">
-                  여러 암묵지를 열어 잔액이 0P인 상태로 전환해요.
+                  여러 노하우를 열어 잔액이 0P인 상태로 전환해요.
                 </p>
                 <div className="mt-4">
                   <FullWidthButton

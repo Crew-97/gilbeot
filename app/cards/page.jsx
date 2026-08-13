@@ -38,7 +38,7 @@ function CardsContent() {
   )
   const center = centerId ? state.centers.find((item) => item.id === centerId) : null
   const place = placeId ? state.places.find((item) => item.id === placeId) : null
-  const contextLabel = place?.name || center?.name || '전체 암묵지'
+  const contextLabel = place?.name || center?.name || '전체 노하우'
 
   const setCategory = (nextCategory) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -50,10 +50,10 @@ function CardsContent() {
     <main className="mx-auto flex min-h-screen max-w-[390px] flex-col gap-5 px-4 py-6">
       <header>
         <span className="text-caption text-ink-500">{contextLabel}</span>
-        <h1 className="mt-1 text-title-2 tracking-tight text-ink-000">암묵지 목록</h1>
+        <h1 className="mt-1 text-title-2 tracking-tight text-ink-000">노하우 목록</h1>
       </header>
 
-      <div className="grid grid-cols-4 gap-2" role="tablist" aria-label="암묵지 카테고리">
+      <div className="grid grid-cols-4 gap-2" role="tablist" aria-label="노하우 카테고리">
         {CATEGORIES.map((item) => {
           const active = category === item.key
           return (
@@ -77,12 +77,12 @@ function CardsContent() {
       </div>
 
       {!category ? (
-        <p className="text-caption text-ink-500">전체 카테고리의 암묵지를 보여드려요.</p>
+        <p className="text-caption text-ink-500">전체 카테고리의 노하우를 보여드려요.</p>
       ) : null}
 
       {cards.length === 0 ? (
         <EmptyState
-          message="아직 등록된 암묵지가 없어요. 첫 경험을 남겨 보세요."
+          message="아직 등록된 노하우가 없어요. 첫 경험을 남겨 보세요."
           actionLabel="홈으로 가기"
           onAction={() => router.push('/home')}
         />

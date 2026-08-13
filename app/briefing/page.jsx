@@ -90,7 +90,7 @@ export default function BriefingPage() {
               {group.label} <span className="text-ink-300">{group.cards.length}건</span>
             </h2>
             {group.cards.length === 0 ? (
-              <p className="text-body-sm text-ink-500">아직 등록된 암묵지가 없어요.</p>
+              <p className="text-body-sm text-ink-500">아직 등록된 노하우가 없어요.</p>
             ) : (
               group.cards.map((card) => (
                 <article

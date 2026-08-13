@@ -1,6 +1,6 @@
 'use client'
 
-// S-10 주변 — 운행 중 현재 위치 기반 암묵지 조회 (기획서 8-6, 해소 #30)
+// S-10 주변 — 운행 중 현재 위치 기반 노하우 조회 (기획서 8-6, 해소 #30)
 // 기사가 직접 열 때만 갱신한다. 알림·자동 팝업·자동 새로고침 금지
 // 소비 전용 — 인터뷰를 만들지 않고, 경로·도로 정보를 주지 않는다
 // 좌표 이력을 쌓지 않는다. mockLocation 은 값 하나뿐이다
@@ -20,10 +20,9 @@ import { useState } from 'react'
 import { EmptyState } from '@/components/EmptyState'
 import { Header } from '@/components/Header'
 import { LockedCardSummary } from '@/components/LockedCardSummary'
-import { MockBadge } from '@/components/MockBadge'
 import { PointText } from '@/components/PointText'
 
-// Mock 위치 프리셋. 1차는 마장휴게쉼터 부근(카드 0건) — 위치를 옮기면 목록이 바뀌는 것을 보여준다
+// 위치 프리셋. 1차는 마장휴게쉼터 부근(카드 0건) — 위치를 옮기면 목록이 바뀌는 것을 보여준다
 const MOCK_SPOTS = [
   { label: '마장휴게쉼터 부근', lat: 37.236, lng: 127.385 },
   { label: '군포 복합물류센터 부근', lat: 37.31, lng: 126.936 },
@@ -51,14 +50,14 @@ export default function NearbyPage() {
   if (!driving) {
     return (
       <EmptyState
-        message="주변 암묵지는 운행 중에만 볼 수 있어요."
+        message="주변 노하우는 운행 중에만 볼 수 있어요."
         actionLabel="홈으로 가기"
         onAction={() => router.push('/home')}
       />
     )
   }
 
-  // 현재 위치(Mock). 값이 없으면 도착 센터 기준으로 대체하고 그 사실을 알린다
+  // 현재 위치. 값이 없으면 도착 센터 기준으로 대체하고 그 사실을 알린다
   const center = state.centers.find((c) => c.id === dispatch.centerId)
   const location = state.mockLocation || MOCK_SPOTS[0]
   const effectiveLocation = location || (center ? { lat: center.lat, lng: center.lng } : null)
@@ -107,16 +106,16 @@ export default function NearbyPage() {
             </span>
           ) : null}
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <MockBadge />
-          <button onClick={handleMove} className="text-caption font-bold text-ink-500 underline">
-            Mock 위치 이동
-          </button>
-        </div>
+        <button
+          onClick={handleMove}
+          className="min-h-11 shrink-0 text-caption font-bold text-ink-500 underline"
+        >
+          위치 이동
+        </button>
       </div>
 
       <p className="text-caption text-ink-500">
-        반경 {NEAR_RADIUS_KM}km 안의 암묵지를 보여드려요. 이 화면은 직접 열 때만 갱신돼요.
+        반경 {NEAR_RADIUS_KM}km 안의 노하우를 보여드려요. 이 화면은 직접 열 때만 갱신돼요.
       </p>
 
       {cards.length === 0 ? (
