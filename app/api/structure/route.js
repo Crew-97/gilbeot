@@ -6,7 +6,7 @@
 export const maxDuration = 25
 
 // 무료 한도 확보를 위해 gemini-3.6-flash 에서 교체했다. 한도는 프로젝트당 모델당으로 잡힌다
-// 해소 26 이 확정한 모델명과 다르므로 AGENTS.md 와 docs/API.md 갱신이 필요하다
+// 해소 26 갱신 완료 (2026-08-13). 되돌리려면 이 상수만 바꾸면 된다
 const MODEL = 'gemini-3.5-flash-lite'
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta'
 
@@ -34,7 +34,7 @@ const RELATIONS = ['new', 'similar', 'conflict', 'duplicate']
 // 최대 20건 (API.md A-1)
 const MAX_EXISTING_CARDS = 20
 
-// ai/system_prompt.txt 와 같은 내용이다. 파일 읽기가 끼면 그 자체가 새 실패 지점이 되므로 상수로 둔다
+// 프롬프트 정본이다. 파일로 두면 파일 읽기가 새 실패 지점이 되므로 상수로 갖는다
 const SYSTEM_PROMPT = `너는 화물기사의 인터뷰 답변에서 현장 지식(암묵지)을 구조화하는 분석기다.
 요약기가 아니다. 아래 5단계를 순서대로 수행하고 JSON 하나만 반환한다.
 
@@ -230,7 +230,7 @@ followUpQuestion으로 이유를 묻는다.
 { "verdict": "invalid", "rejectReason": "off_topic",
   "cards": [], "elementCheck": null, "followUpQuestion": null }`
 
-// ai/fallback_response.json 과 같은 내용이다. 시연 대사를 바꾸면 두 곳을 함께 고친다
+// 폴백 캐시 정본이다. 시연 대사를 바꾸면 이 상수도 함께 고친다
 const FALLBACK = {
   base_answer: {
     verdict: 'valid',

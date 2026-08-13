@@ -3,7 +3,7 @@
 > 문서 버전: v1.2
 > 정본 기획서: `docs/길벗_서비스_기획서_v2.4.md`
 > 선행 문서: `docs/기능명세서.md` — 화면 S-01~S-10, 기능 ID / `docs/ERD.dbml` — 필드명의 정본
-> 프롬프트 정본: `ai/system_prompt.txt` / 폴백 정본: `ai/fallback_response.json`
+> 프롬프트·폴백 정본: `app/api/structure/route.js`의 `SYSTEM_PROMPT`·`FALLBACK` 상수
 > 공통 규칙: `AGENTS.md`
 > 이 문서와 기획서가 충돌하면 **기획서를 우선**하고 팀에 알린다.
 
@@ -122,7 +122,7 @@ v2.4가 추가한 것(출발지·도착지 입력, 도착지 브리핑, 요약 �
 | 4 | AI-03, AI-04 | 관계 판정 | `cards[].relation` |
 | 5 | AI-02 | 후속 질문 | `followUpQuestion` |
 
-**근거**: 기획서 7-3, 18-7, 18-확정 15·16·17·19 / 기능명세서 6장 / `ai/system_prompt.txt`
+**근거**: 기획서 7-3, 18-7, 18-확정 15·16·17·19 / 기능명세서 6장 / `route.js`의 `SYSTEM_PROMPT` 상수
 **우선순위**: P0
 
 ## A-1. 요청
@@ -260,7 +260,7 @@ category === "center_tip"  →  place_id = null,            center_id = 요청�
 
 `center`는 원문 기준이다. 실측에서 `t01`("군포센터 안에는 기름 넣을 데가 없거든요")은 `true`, 센터 언급이 없는 `t04`는 `false`였다. **컨텍스트로 채우면 항상 `true`가 되어 판정이 무의미해지므로 이 동작이 맞다.**
 
-> `ai/system_prompt.txt`의 3단계 문구는 `place`와 `center`를 묶어 서술하고 있으나 모델은 위와 같이 구분해 판정한다. 12/12를 통과한 상태를 유지하기 위해 프롬프트를 고치지 않고 이 문서를 실측에 맞췄다.
+> 2026-08-13 갱신. 초기 프롬프트는 `place`와 `center`를 묶어 서술해 모델이 카드 분류에 따라 키 집합까지 바꾸는 오판이 있었다(골든 `t07`). 현재 프롬프트는 **키 집합을 요청의 `place.category` 기준으로 유지한다**고 명시한다. 다만 `t07`의 `center` 판정은 여전히 실측과 어긋나며, 시연 동선에 없는 변칙 입력이므로 알려진 편차로 둔다.
 
 나머지를 컨텍스트로 채우면 비환각 원칙이 깨진다. `false`가 곧 "카드 필드를 비운 이유"이며 후속 질문의 입력이다.
 
@@ -278,9 +278,13 @@ category === "center_tip"  →  place_id = null,            center_id = 요청�
 | `new` | 어디에도 해당 없음 | 한다 | 안 함 (관계 없음) |
 | `similar` | 기존 카드와 같은 현장 사실 | 한다 | `similar` |
 | `conflict` | 기존 카드와 양립 불가 | 한다 | `conflict` |
-| `duplicate` | **이번 인터뷰**에서 이미 만든 카드와 같은 주장 | **안 한다** | 안 함 |
+| `duplicate` | **이번 인터뷰**에서 이미 만든 카드와 같은 주장 | **store가 안 만든다** | 안 함 |
 
 판정 우선순위는 `duplicate` > `similar` > `conflict` > `new`. 확신이 없으면 `new`로 둔다. 잘못 연결하는 것보다 안전하다.
+
+**`duplicate`도 `cards`에 담아 반환한다** (2026-08-13 추가). 위 표의 "카드 생성"은 **store의 저장 여부**를 말한다. API 응답에서 카드를 생략하면 `verdict: valid` + `cards: []`가 되어 A-6의 모순 응답 조건에 걸려 폴백으로 떨어진다. 실제로 골든 `t09`에서 이 현상이 발생했다. `lib/store.js`의 `addCard`가 `relation === 'duplicate'`를 받아 카드를 만들지 않고 `cardId: null`을 돌려주는 구조이므로, **판정은 AI가 하고 저장하지 않는 처리는 store가 한다.**
+
+우선순위는 선언만으로 지켜지지 않았다. 경량 모델이 `duplicate` 대신 `similar`를 골랐고, 그대로 두면 store가 카드를 만들고 `extra_reward`까지 가서 기획서 9-5(의미 없는 반복 발화 보상 제외)가 뚫린다. 프롬프트를 **절차형**(먼저 `sessionCards`와 대조하고, `duplicate`가 아닐 때만 `existingCards`를 본다)으로 바꿔 해결했다.
 
 ### 규칙
 
@@ -320,7 +324,7 @@ cards[].evidence                →   sttText 안에 실제로 존재하는 구�
 1단 — 서버 내부 (route.js)
   LLM 실패 · JSON 파싱 실패 · 모순 응답 · 타임아웃(20초)
     → JSON 파싱 실패는 1회 재시도
-    → 그래도 실패하면 ai/fallback_response.json을 200으로 반환, fallbackUsed: true
+    → 그래도 실패하면 route.js 의 FALLBACK 상수를 200으로 반환, fallbackUsed: true
 
 2단 — 클라이언트 (S-06)
   네트워크 오류 · 500 · 응답 형식 불일치
@@ -337,7 +341,7 @@ cards[].evidence                →   sttText 안에 실제로 존재하는 구�
 
 ### 캐시 선택 규칙
 
-`ai/fallback_response.json`이 3종을 담고 있다.
+`route.js`의 `FALLBACK` 상수가 2종을 담고 있다. `reject`는 자동 선택하지 않으므로 상수에 넣지 않았다.
 
 | 키 | 언제 | 시연 대사 |
 |---|---|---|
@@ -348,7 +352,8 @@ cards[].evidence                →   sttText 안에 실제로 존재하는 구�
 - 캐시는 **코드 안의 상수**로 옮긴다. 파일 읽기가 끼면 그 자체가 새 실패 지점이 된다. 이러면 `INTERNAL_ERROR`는 사실상 발생하지 않는다
 - `base_answer`는 2026-08-12 골든 테스트 `t01`에서 실제로 생성된 출력이다
 - **시연 대사를 바꾸면 이 파일도 함께 고친다**
-- 타임아웃 20초는 골든 테스트 최대 지연 15.9초(t03)보다 여유를 둔 값이다 (미정 #26 해소)
+- LLM 호출 총 예산은 20초이고 재시도까지 그 안에서 끝낸다 (미정 #26 해소). `maxDuration`은 **25**다 — 20으로 두면 예산을 다 쓴 순간 함수가 먼저 종료돼 폴백을 반환할 구간이 사라진다
+- 2026-08-13 `gemini-3.5-flash-lite` 실측 최대 지연은 **2,955ms**다. 초기 `gemini-3.6-flash`는 추론 기본값에서 14,056ms였고, 추론을 최소화해 2,390ms로 줄인 뒤 모델을 교체했다
 
 **근거**: AGENTS.md 아키텍처 규칙 / 기능명세서 6-6, S-06 실패 상태
 
