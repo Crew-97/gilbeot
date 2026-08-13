@@ -1,0 +1,9 @@
+[
+  { "id": "place_001", "center_id": "center_001", "name": "양산큰길주유소",   "category": "gas",  "lat": 35.379, "lng": 129.041, "visit_count": 184 },
+  { "id": "place_002", "center_id": "center_001", "name": "물금기사식당",     "category": "food", "lat": 35.392, "lng": 129.055, "visit_count": 152 },
+  { "id": "place_003", "center_id": "center_001", "name": "낙동강화물쉼터",   "category": "rest", "lat": 35.371, "lng": 129.036, "visit_count": 91  },
+  { "id": "place_004", "center_id": "center_001", "name": "새물금주유소",     "category": "gas",  "lat": 35.398, "lng": 129.059, "visit_count": 63  },
+  { "id": "place_005", "center_id": "center_002", "name": "군포하나로주유소", "category": "gas",  "lat": 37.306, "lng": 126.931, "visit_count": 143 },
+  { "id": "place_006", "center_id": "center_002", "name": "산본기사식당",     "category": "food", "lat": 37.318, "lng": 126.945, "visit_count": 77  },
+  { "id": "place_007", "center_id": "center_003", "name": "마장휴게쉼터",     "category": "rest", "lat": 37.236, "lng": 127.385, "visit_count": 54  }
+]

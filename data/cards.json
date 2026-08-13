@@ -1,0 +1,106 @@
+[
+  {
+    "id": "card_001", "center_id": "center_001", "place_id": null, "category": "center_tip",
+    "title": "후문으로 진입하세요", "reason": "정문은 대형차 회차가 어려워요",
+    "status": "published", "author_driver_id": "driver_002",
+    "stt_text": "정문 쪽은 좁아서 큰 차는 돌리기가 힘들어요. 후문으로 들어가는 게 훨씬 편해요.",
+    "helpful_count": 31, "not_helpful_count": 2, "cross_check_count": 0,
+    "created_at": "2026-05-14T10:30:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_002", "center_id": "center_001", "place_id": null, "category": "center_tip",
+    "title": "오후 2시 이후에는 대기가 길어요", "reason": "상하차가 오후에 몰려요",
+    "status": "published", "author_driver_id": "driver_003",
+    "stt_text": "오후 두 시 넘어가면 상하차 차량이 몰려서 한참 기다려야 해요.",
+    "helpful_count": 24, "not_helpful_count": 1, "cross_check_count": 0,
+    "created_at": "2026-06-02T14:05:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_003", "center_id": "center_001", "place_id": null, "category": "center_tip",
+    "title": "센터 진입 전에 주유하세요", "reason": "센터 안에는 주유소가 없어요",
+    "status": "published", "author_driver_id": "driver_002",
+    "stt_text": "거기 안에는 주유소가 없어요. 들어가기 전에 미리 넣고 가는 게 좋아요.",
+    "helpful_count": 18, "not_helpful_count": 0, "cross_check_count": 4,
+    "created_at": "2026-06-20T09:12:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_004", "center_id": "center_001", "place_id": "place_001", "category": "gas",
+    "title": "대형 화물차도 진입하기 편해요", "reason": "입구가 넓어요",
+    "status": "published", "author_driver_id": "driver_003",
+    "stt_text": "입구가 넓어서 11톤도 들어가기 어렵지 않아요.",
+    "helpful_count": 82, "not_helpful_count": 3, "cross_check_count": 0,
+    "created_at": "2026-05-28T16:44:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_005", "center_id": "center_001", "place_id": "place_001", "category": "gas",
+    "title": "밤 10시 이후에도 이용할 수 있어요", "reason": "야간에도 영업해요",
+    "status": "published", "author_driver_id": "driver_002",
+    "stt_text": "밤 열 시 넘어서 가도 문 열려 있어요. 야간 운행할 때 편해요.",
+    "helpful_count": 43, "not_helpful_count": 2, "cross_check_count": 0,
+    "created_at": "2026-07-03T21:20:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_006", "center_id": "center_001", "place_id": "place_001", "category": "gas",
+    "title": "주변에서 기름이 제일 싸요", "reason": "",
+    "status": "review", "author_driver_id": "driver_003",
+    "stt_text": "여기가 이 근처에서 기름이 제일 쌉니다.",
+    "helpful_count": 5, "not_helpful_count": 37, "cross_check_count": 0,
+    "created_at": "2026-05-20T11:02:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_007", "center_id": "center_001", "place_id": "place_002", "category": "food",
+    "title": "11톤 트럭도 주차할 수 있어요", "reason": "식당 앞에 대형차 자리가 있어요",
+    "status": "published", "author_driver_id": "driver_002",
+    "stt_text": "식당 앞마당이 넓어서 11톤도 세울 수 있어요.",
+    "helpful_count": 27, "not_helpful_count": 1, "cross_check_count": 0,
+    "created_at": "2026-06-15T12:31:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_008", "center_id": "center_001", "place_id": "place_002", "category": "food",
+    "title": "점심시간 전에 가면 자리가 넉넉해요", "reason": "12시가 넘으면 많이 붐벼요",
+    "status": "published", "author_driver_id": "driver_003",
+    "stt_text": "열두 시 전에 가면 한산한데 그 뒤로는 사람이 확 몰려요.",
+    "helpful_count": 9, "not_helpful_count": 0, "cross_check_count": 0,
+    "created_at": "2026-07-22T11:48:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_009", "center_id": "center_001", "place_id": "place_003", "category": "rest",
+    "title": "화물차 주차 공간이 넓어요", "reason": "대형차 자리가 따로 있어요",
+    "status": "published", "author_driver_id": "driver_002",
+    "stt_text": "여기는 화물차 대는 자리가 따로 있어서 쉬어 가기 좋아요.",
+    "helpful_count": 14, "not_helpful_count": 1, "cross_check_count": 0,
+    "created_at": "2026-07-30T19:15:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_010", "center_id": "center_002", "place_id": "place_005", "category": "gas",
+    "title": "센터 가기 전에 여기서 주유하는 게 좋아요", "reason": "군포센터 안에는 주유소가 없어요",
+    "status": "published", "author_driver_id": "driver_002",
+    "stt_text": "군포센터는 안에 기름 넣을 데가 없어서 여기서 넣고 들어가요.",
+    "helpful_count": 11, "not_helpful_count": 0, "cross_check_count": 0,
+    "created_at": "2026-08-01T08:55:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_011", "center_id": "center_002", "place_id": null, "category": "center_tip",
+    "title": "새벽 배차는 후문으로 들어가세요", "reason": "정문은 여섯 시에 열려요",
+    "status": "published", "author_driver_id": "driver_003",
+    "stt_text": "새벽에 가면 정문이 잠겨 있어요. 여섯 시나 돼야 열리니까 후문으로 돌아 들어가야 해요.",
+    "helpful_count": 22, "not_helpful_count": 1, "cross_check_count": 0,
+    "created_at": "2026-06-27T05:40:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_012", "center_id": "center_002", "place_id": "place_006", "category": "food",
+    "title": "주차하고 바로 들어갈 수 있어요", "reason": "가게 옆에 화물차 자리가 있어요",
+    "status": "published", "author_driver_id": "driver_002",
+    "stt_text": "가게 옆쪽에 화물차 댈 자리가 있어서 주차하고 바로 들어가면 돼요.",
+    "helpful_count": 16, "not_helpful_count": 0, "cross_check_count": 0,
+    "created_at": "2026-07-11T13:20:00+09:00", "deleted_at": null
+  },
+  {
+    "id": "card_013", "center_id": "center_002", "place_id": "place_005", "category": "gas",
+    "title": "새벽에도 문을 열어요", "reason": "24시간 운영해요",
+    "status": "published", "author_driver_id": "driver_003",
+    "stt_text": "여기는 스물네 시간이라 새벽에 가도 열려 있어요.",
+    "helpful_count": 19, "not_helpful_count": 2, "cross_check_count": 0,
+    "created_at": "2026-07-18T04:15:00+09:00", "deleted_at": null
+  }
+]

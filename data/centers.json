@@ -1,0 +1,35 @@
+[
+  {
+    "id": "center_001",
+    "name": "양산 ICD",
+    "address": "경상남도 양산시 물금읍 (시연용 근사 주소)",
+    "lat": 35.387,
+    "lng": 129.048,
+    "visit_count": 1253,
+    "logistics_cost": 38000,
+    "avg_stay_minutes": 95,
+    "handled_items": "컨테이너, 수출입 화물"
+  },
+  {
+    "id": "center_002",
+    "name": "군포 복합물류센터",
+    "address": "경기도 군포시 부곡동 (시연용 근사 주소)",
+    "lat": 37.312,
+    "lng": 126.938,
+    "visit_count": 986,
+    "logistics_cost": 24000,
+    "avg_stay_minutes": 70,
+    "handled_items": "생활용품, 가전"
+  },
+  {
+    "id": "center_003",
+    "name": "이천 마장물류센터",
+    "address": "경기도 이천시 마장면 (시연용 근사 주소)",
+    "lat": 37.242,
+    "lng": 127.392,
+    "visit_count": 821,
+    "logistics_cost": 21000,
+    "avg_stay_minutes": 55,
+    "handled_items": "식품, 냉장"
+  }
+]
