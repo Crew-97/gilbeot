@@ -10,12 +10,16 @@
 </p>
 
 <p align="center">
-  <a href="https://gilbeot-six.vercel.app"><strong>배포 URL → gilbeot-six.vercel.app</strong></a>
+  <a href="https://gilbeot-six.vercel.app"><strong>서비스 시연</strong></a> ·
+  <a href="https://dorian-insect-dbd.notion.site/3d7f9416d0c981e09550c74daf722192">서현식 포트폴리오</a> ·
+  <a href="https://github.com/Crew-97">GitHub 프로필</a>
 </p>
 
 ---
 
 MOVE-AI Challenge 2026 출품작. **MVP 설계를 가진 프로토타입**이다 — DB 없이 시드 JSON과 브라우저 인메모리 상태로 동작하며, 트럭커 연동 데이터는 Mock으로 재현한다.
+
+[화면·개인 기여](#서비스-화면과-개인-기여) · [시연 동선](#시연-동선-기획서-20장-20단계-요약) · [기술 스택](#기술-스택) · [로컬 실행](#로컬-실행)
 
 ## 서비스 화면과 개인 기여
 
